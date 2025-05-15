@@ -6,6 +6,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__, template_folder="../templates")
+app.secret_key = 'doarcuidar$2025!@#segredo'  # Coloque uma chave secreta forte!
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///doarcuidar.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
