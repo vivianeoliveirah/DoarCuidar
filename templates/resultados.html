@@ -2,18 +2,17 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Resultados da Pesquisa</title>
 </head>
 <body>
     <h1>Resultados da Pesquisa</h1>
     {% if erro %}
-        <p style="color: red;"><strong>Erro:</strong> {{ erro }}</p>
+        <p style="color: red;">{{ erro }}</p>
     {% elif empresas %}
         <ul>
-            {% for empresa in empresas %}
-                <li><strong>Nome:</strong> {{ empresa['nomeEmpresarial'] }}</li>
-            {% endfor %}
+        {% for empresa in empresas %}
+            <li>{{ empresa['nomeEmpresarial'] }}</li>
+        {% endfor %}
         </ul>
     {% else %}
         <p>Nenhuma empresa encontrada.</p>

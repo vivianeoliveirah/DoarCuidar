@@ -2,9 +2,11 @@
 Este módulo define as rotas para o aplicativo Flask.
 """
 import logging
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for, session
 from app import app
 from app.consulta_empresas import buscar_empresas
+from app.models import db, Usuario
+from werkzeug.security import generate_password_hash
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -48,3 +50,30 @@ def buscar_instituicoes():
         return render_template('resultados.html', empresas=empresas)
     except Exception as e:
         return render_template('resultados.html', erro=str(e))
+
+
+@app.route('/cadastro', methods=['GET'])
+def cadastro():
+    return render_template('cadastro.html')
+
+
+@app.route('/cadastrar', methods=['POST'])
+def cadastrar():
+    nome = request.form['nome']
+    cpf = request.form['cpf']
+    email = request.form['email']
+    senha = generate_password_hash(request.form['senha'])
+    usuario = Usuario(nome=nome, cpf=cpf, email=email, senha=senha)
+    db.session.add(usuario)
+    db.session.commit()
+    return redirect(url_for('index'))
+
+
+@app.route('/perfil')
+def perfil():
+    # Supondo que o id do usuário está salvo na sessão após login
+    usuario_id = session.get('usuario_id')
+    if not usuario_id:
+        return redirect(url_for('login'))
+    usuario = Usuario.query.get(usuario_id)
+    return render_template('perfil.html', usuario=usuario)
