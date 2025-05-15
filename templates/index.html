@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoarCuidar - Página Inicial</title>
+    <style>
+        body {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f8f9fa;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 32px 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+        .subtext {
+            font-size: 1.1em;
+            color: #555;
+            margin-top: 8px;
+        }
+        .small {
+            font-size: 0.95em;
+            color: #888;
+            margin-top: 2px;
+        }
+        form {
+            margin-top: 24px;
+        }
+        label {
+            display: block;
+            margin: 12px 0 4px 0;
+        }
+        input {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 200px;
+        }
+        button {
+            margin-top: 18px;
+            padding: 8px 24px;
+            border: none;
+            border-radius: 4px;
+            background: #007bff;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bem-vindo ao DoarCuidar</h1>
+        <div class="subtext">Encontre uma Instituição para doar</div>
+        <div class="small">Consulta CNPJ oficial da Receita Federal do Brasil</div>
+        <form action="/buscar_instituicoes" method="POST">
+            <label for="palavra_chave">Palavra-chave:</label>
+            <input type="text" id="palavra_chave" name="palavra_chave" placeholder="Ex: caridade" required>
+            
+            <label for="estado">Estado:</label>
+            <input type="text" id="estado" name="estado" placeholder="Ex: SP" required>
+            
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+</body>
+</html>
+
+from flask import render_template, request
+from app import app
+from app.consulta_empresas import buscar_empresas
+
+@app.route('/buscar_instituicoes', methods=['POST'])
+def buscar_instituicoes():
+    client_id = "SEU_CLIENT_ID"
+    client_secret = "SEU_SECRET"
+    palavra_chave = request.form.get('palavra_chave')
+    estado = request.form.get('estado')
+
+    try:
+        empresas = buscar_empresas(client_id, client_secret, palavra_chave, estado)
+        return render_template('resultados.html', empresas=empresas)
+    except Exception as e:
+        return render_template('resultados.html', erro=str(e))

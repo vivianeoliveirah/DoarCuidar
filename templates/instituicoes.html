@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buscar Instituições</title>
+</head>
+<body>
+    <h1>Buscar Instituições de Caridade</h1>
+    <form method="POST">
+        <label for="palavra_chave">Palavra-chave:</label>
+        <input type="text" id="palavra_chave" name="palavra_chave" placeholder="Ex: caridade">
+        <label for="estado">Estado:</label>
+        <input type="text" id="estado" name="estado" placeholder="Ex: SP">
+        <button type="submit">Buscar</button>
+    </form>
+
+    {% if empresas %}
+        <h2>Resultados:</h2>
+        <ul>
+            {% for empresa in empresas %}
+                <li>
+                    <strong>Nome:</strong> {{ empresa['nomeEmpresarial'] }}<br>
+                    <a href="/detalhes/{{ empresa['ni'] }}">Ver Detalhes</a>
+                </li>
+            {% endfor %}
+        </ul>
+        <div>
+            <a href="?pagina={{ pagina - 1 }}">Anterior</a>
+            <a href="?pagina={{ pagina + 1 }}">Próxima</a>
+        </div>
+    {% elif erro %}
+        <p style="color: red;">Erro: {{ erro }}</p>
+    {% endif %}
+</body>
+</html>
