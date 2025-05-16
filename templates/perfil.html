@@ -27,6 +27,9 @@
     </style>
 </head>
 <body>
+    <a href="{{ url_for('index') }}" style="position: absolute; top: 20px; left: 20px; text-decoration: none; color: #085e16; font-weight: bold;">
+        &#8592; Voltar para a página principal
+    </a>
     <div class="perfil-container">
         <h1>Perfil do Usuário</h1>
         {% with messages = get_flashed_messages() %}
@@ -54,15 +57,18 @@
             <button type="submit">Salvar Alterações</button>
         </form>
         <div class="donatarios">
-            <h2>Donatários Salvos</h2>
             {% if donatarios %}
+                <h2>Donatários Salvos</h2>
+                <ul>
                 {% for donatario in donatarios %}
-                    <div class="donatario-item">
-                        <p><strong>Nome:</strong> {{ donatario.nome }}</p>
-                        <p><strong>CNPJ:</strong> {{ donatario.cnpj }}</p>
-                        <!-- Adicione outros campos do donatário aqui -->
-                    </div>
+                    <li>
+                        <strong>{{ donatario.nome }}</strong><br>
+                        CNPJ: {{ donatario.cnpj }}<br>
+                        Telefone: {{ donatario.telefone }}<br>
+                        Endereço: {{ donatario.endereco }}
+                    </li>
                 {% endfor %}
+                </ul>
             {% else %}
                 <p>Nenhum donatário salvo.</p>
             {% endif %}

@@ -32,24 +32,28 @@ def pesquisar():
     try:
         logging.debug(f"Buscando empresas com palavra-chave: {palavra_chave}, estado: {estado}")
         empresas = buscar_empresas(client_id, client_secret, palavra_chave, estado)
+        empresas = resultado['empresas']
         return render_template('resultados.html', empresas=empresas)
     except Exception as e:
         logging.error(f"Erro ao buscar empresas: {str(e)}")
         return render_template('resultados.html', erro="Erro interno no servidor.")
 
 
-@app.route('/buscar_instituicoes', methods=['POST'])
-def buscar_instituicoes():
-    client_id = "SEU_CLIENT_ID"
-    client_secret = "SEU_SECRET"
-    palavra_chave = request.form.get('palavra_chave')
-    estado = request.form.get('estado')
+from flask import session, redirect, url_for, flash
 
-    try:
-        empresas = buscar_empresas(client_id, client_secret, palavra_chave, estado)
+@app.route('/buscar_instituicoes', methods=['GET', 'POST'])
+def buscar_instituicoes():
+    if 'usuario_id' not in session:
+        flash('Você precisa estar logado para pesquisar instituições.')
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        palavra_chave = request.form['palavra_chave']
+        estado = request.form['estado']
+        resultado = buscar_empresas('', '', palavra_chave, estado)
+        empresas = resultado['empresas']
         return render_template('resultados.html', empresas=empresas)
-    except Exception as e:
-        return render_template('resultados.html', erro=str(e))
+    # Para GET ou outros casos, sempre retorne algo:
+    return render_template('resultados.html', empresas=[])
 
 
 @app.route('/cadastro', methods=['GET'])
@@ -94,23 +98,13 @@ def cadastrar():
     return redirect(url_for('perfil'))
 
 
-@app.route('/perfil', methods=['GET', 'POST'])
+@app.route('/perfil')
 def perfil():
     usuario_id = session.get('usuario_id')
     if not usuario_id:
         return redirect(url_for('login'))
     usuario = Usuario.query.get(usuario_id)
     donatarios = Donatario.query.filter_by(usuario_id=usuario_id).all()
-
-    if request.method == 'POST':
-        usuario.email = request.form['email']
-        usuario.endereco = request.form['endereco']
-        usuario.telefone = request.form['telefone']
-        usuario.data_nascimento = request.form['data_nascimento']
-        db.session.commit()
-        flash('Dados atualizados com sucesso!')
-        return redirect(url_for('perfil'))
-
     return render_template('perfil.html', usuario=usuario, donatarios=donatarios)
 
 
@@ -127,3 +121,30 @@ def login():
             flash('E-mail ou senha inválidos.')
             return redirect(url_for('login'))
     return render_template('login.html')
+
+
+from flask import request, session, redirect, url_for, flash
+from app.models import Donatario, db
+
+@app.route('/salvar_instituicao', methods=['POST'])
+def salvar_instituicao():
+    if 'usuario_id' not in session:
+        flash('Você precisa estar logado para salvar instituições.')
+        return redirect(url_for('login'))
+    nome = request.form['nome']
+    cnpj = request.form['cnpj']
+    telefone = request.form['telefone']
+    endereco = request.form['endereco']
+    usuario_id = session['usuario_id']
+
+    donatario = Donatario(
+        usuario_id=usuario_id,
+        nome=nome,
+        cnpj=cnpj,
+        telefone=telefone,
+        endereco=endereco
+    )
+    db.session.add(donatario)
+    db.session.commit()
+    flash('Instituição salva com sucesso!')
+    return redirect(url_for('perfil'))

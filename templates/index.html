@@ -85,6 +85,9 @@
     </style>
 </head>
 <body>
+    <a href="{{ url_for('index') }}" style="position: absolute; top: 20px; left: 20px; text-decoration: none; color: #085e16; font-weight: bold;">
+        &#8592; Voltar para a página principal
+    </a>
     <div class="top-bar">
         <a href="{{ url_for('cadastro') }}" class="btn-entrar" style="margin-right: 12px;">Criar cadastro</a>
         <a href="{{ url_for('login') }}" class="btn-entrar">Entrar</a>
@@ -98,7 +101,10 @@
     <div class="container">
         <h1>Bem-vindo ao DoarCuidar</h1>
         <div class="subtext">Encontre uma Instituição para doar</div>
-        <div class="small">Consulta CNPJ oficial da Receita Federal do Brasil</div>
+        <div class="small">Consulta CNPJ oficial registrado na Receita Federal do Brasil</div>
+        {% if not session.get('usuario_id') %}
+            <p style="color: red;">Para pesquisar instituições, faça login ou crie uma conta.</p>
+        {% endif %}
         <form action="/buscar_instituicoes" method="POST">
             <label for="palavra_chave">Palavra-chave:</label>
             <input type="text" id="palavra_chave" name="palavra_chave" placeholder="Ex: caridade" required>

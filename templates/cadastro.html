@@ -74,6 +74,9 @@
     </style>
 </head>
 <body>
+    <a href="{{ url_for('index') }}" style="position: absolute; top: 20px; left: 20px; text-decoration: none; color: #085e16; font-weight: bold;">
+        &#8592; Voltar para a página principal
+    </a>
     <div class="cadastro-container">
         <h1>Cadastro de Cidadão Doador</h1>
         {% with messages = get_flashed_messages() %}

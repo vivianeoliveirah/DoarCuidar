@@ -70,23 +70,36 @@ def consulta_qsa(token, cnpj):
 
 
 def buscar_empresas(client_id, client_secret, palavra_chave, estado, cidade='', cnae='', situacao='', pagina=1):
-    """Busca empresas na API com suporte à paginação."""
-    # Obtém o token antes da busca
-    token = autenticar(client_id, client_secret)
-    
-    cnpj_url = f"https://apigateway.conectagov.estaleiro.serpro.gov.br/api-cnpj-empresa/v2/empresa?estado={estado}&termo={palavra_chave}&pagina={pagina}"
-    
-    if cidade:
-        cnpj_url += f"&cidade={cidade}"
-    if cnae:
-        cnpj_url += f"&cnae={cnae}"
-    if situacao:
-        cnpj_url += f"&situacao={situacao}"
-    
-    headers = {"Authorization": f"Bearer {token}"}
-    try:
-        response = requests.get(cnpj_url, headers=headers, timeout=10)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        raise RuntimeError(f"Erro na consulta: {e}")
+    """Simulação de busca de empresas para uso acadêmico."""
+    # Dados fictícios simulando resposta da API
+    return {
+        "empresas": [
+            {
+                "nomeEmpresarial": "Associação de Caridade Cuidadora",
+                "ni": "12345678000199",
+                "telefone": [{"ddd": "11", "numero": "12345678"}],
+                "cnaePrincipal": {"descricao": "Atividades assistenciais"},
+                "endereco": {"logradouro": "Rua Exemplo", "numero": "100"},
+                "uf": "SP"
+            },
+            {
+                "nomeEmpresarial": "Clínica Caridade",
+                "ni": "98765432000188",
+                "telefone": [{"ddd": "11", "numero": "87654321"}],
+                "cnaePrincipal": {"descricao": "Atividades de clínicas"},
+                "endereco": {"logradouro": "Avenida Teste", "numero": "200"},
+                "uf": "SP"
+            }
+        ]
+    }
+
+
+from app.consulta_empresas import buscar_empresas
+
+client_id = 'SEU_CLIENT_ID'
+client_secret = 'SEU_CLIENT_SECRET'
+palavra_chave = 'hospital'
+estado = 'SP'
+
+resultado = buscar_empresas(client_id, client_secret, palavra_chave, estado)
+print(resultado)
