@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DoarCuidar - Página Inicial</title>
+    <style>
+        body {
+            background: rgb(255, 255, 51); /* mesmo amarelo do cadastro */
+            color: #111;
+            font-family: Arial, Helvetica, sans-serif;
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            margin: 0;
+        }
+        .top-bar {
+            width: 100%;
+            display: flex;
+            justify-content: flex-end;
+            padding: 10px 20px;
+            background: #fff3cd;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+        }
+        .btn-entrar,
+        button {
+            background: rgb(8, 96, 22);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            padding: 8px 24px;
+            text-decoration: none;
+            transition: background 0.2s;
+            margin-top: 22px; /* aumenta o espaço acima do botão */
+        }
+        .btn-entrar:hover,
+        button:hover {
+            background: #065c13;
+        }
+        .top-quote {
+            max-width: 600px;
+            margin-bottom: 22px;
+            background: #fff3cd;
+            border-radius: 8px;
+            padding: 14px 20px;
+            font-size: 0.90em; /* menor */
+            color: #222;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 32px 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+        .subtext {
+            font-size: 1.1em;
+            color: #555;
+            margin-top: 8px;
+        }
+        .small {
+            font-size: 0.95em;
+            color: #888;
+            margin-top: 2px;
+        }
+        form {
+            margin-top: 24px;
+        }
+        label {
+            display: block;
+            margin: 12px 0 4px 0;
+        }
+        input {
+            padding: 6px 10px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            width: 200px;
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('index') }}" style="position: absolute; top: 20px; left: 20px; text-decoration: none; color: #085e16; font-weight: bold;">
+        &#8592; Voltar para a página principal
+    </a>
+    <div class="top-bar">
+        <a href="{{ url_for('cadastro') }}" class="btn-entrar" style="margin-right: 12px;">Criar cadastro</a>
+        <a href="{{ url_for('login') }}" class="btn-entrar">Entrar</a>
+    </div>
+    <div class="top-quote">
+        <strong>2ª SURATA AL BÁCARA - A VACA 215</strong><br>
+        "Perguntam-te que parte devem gastar (em caridade). Dize-lhes:<br>
+        Toda a caridade que fizerdes, deve ser para os pais, parentes, órfãos, necessitados e viajantes (desamparados).<br>
+        E sabei que todo o bem que fizerdes, Allah dele tomará consciência."
+    </div>
+    <div class="container">
+        <h1>Bem-vindo ao DoarCuidar</h1>
+        <div class="subtext">Encontre uma Instituição para doar</div>
+        <div class="small">Consulta CNPJ oficial registrado na Receita Federal do Brasil</div>
+        {% if not session.get('usuario_id') %}
+            <p style="color: red;">Para pesquisar instituições, faça login ou crie uma conta.</p>
+        {% endif %}
+        <form action="/buscar_instituicoes" method="POST">
+            <label for="palavra_chave">Palavra-chave:</label>
+            <input type="text" id="palavra_chave" name="palavra_chave" placeholder="Ex: caridade" required>
+
+            <label for="estado">Estado:</label>
+            <input type="text" id="estado" name="estado" placeholder="Ex: SP" required>
+
+            <br>
+            <button type="submit">Buscar</button>
+        </form>
+    </div>
+    <!-- Outras divs/conteúdo da página -->
+
+    <footer style="text-align:center; margin-top:40px; color:#888;">
+        DoarCuidar - Versão 1.0
+    </footer>
+</body>
+</html>
+

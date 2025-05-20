@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Resultados da Pesquisa</title>
+    <style>
+        body {
+            background: rgb(255, 255, 51);
+            font-family: Arial, Helvetica, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 32px 32px;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+        }
+        h1 { text-align: center; }
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 24px; border-bottom: 1px solid #eee; padding-bottom: 12px; }
+        button { background: rgb(8, 96, 22); color: #fff; border: none; border-radius: 4px; padding: 7px 18px; cursor: pointer; }
+        button:hover { background: #ffecb3; color: #333; }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('index') }}" style="position: absolute; top: 20px; left: 20px; text-decoration: none; color: #085e16; font-weight: bold;">
+        &#8592; Voltar para a página principal
+    </a>
+    <div class="container">
+        <h1>Resultados da Pesquisa</h1>
+        {% if erro %}
+            <p style="color: red;">{{ erro }}</p>
+        {% elif empresas %}
+            <ul>
+            {% for empresa in empresas %}
+                <li>
+                    <strong>{{ empresa['nomeEmpresarial'] }}</strong><br>
+                    CNPJ: {{ empresa['ni'] }}<br>
+                    Telefone: 
+                    {% if empresa['telefone'] and empresa['telefone'][0]['numero'] %}
+                        ({{ empresa['telefone'][0]['ddd'] }}) {{ empresa['telefone'][0]['numero'] }}
+                    {% else %}
+                        Não informado
+                    {% endif %}<br>
+                    Endereço: 
+                    {% if empresa['endereco'] %}
+                        {{ empresa['endereco']['logradouro'] }}, {{ empresa['endereco']['numero'] }}
+                    {% else %}
+                        Não informado
+                    {% endif %}
+                    <form action="{{ url_for('salvar_instituicao') }}" method="POST" style="display:inline;">
+                        <input type="hidden" name="nome" value="{{ empresa['nomeEmpresarial'] }}">
+                        <input type="hidden" name="cnpj" value="{{ empresa['ni'] }}">
+                        <input type="hidden" name="telefone" value="{% if empresa['telefone'] and empresa['telefone'][0]['numero'] %}{{ empresa['telefone'][0]['numero'] }}{% else %}Não informado{% endif %}">
+                        <input type="hidden" name="endereco" value="{% if empresa['endereco'] %}{{ empresa['endereco']['logradouro'] }}, {{ empresa['endereco']['numero'] }}{% else %}Não informado{% endif %}">
+                        <button type="submit">Salvar</button>
+                    </form>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p>Nenhuma empresa encontrada.</p>
+        {% endif %}
+    </div>
+</body>
+</html>
