@@ -1,5 +1,5 @@
-// src/pages/Detalhes.jsx
 import { Link, useLocation } from 'react-router-dom';
+import Fundo from '../assets/fundo.png'; // certifique-se que o caminho está correto
 
 export default function Detalhes() {
   const location = useLocation();
@@ -7,12 +7,15 @@ export default function Detalhes() {
   const erro = location.state?.erro;
 
   return (
-    <div className="min-h-screen p-8 bg-yellow-100 text-black relative">
-      <Link to="/" className="absolute top-5 left-5 text-green-800 font-bold">
+    <div
+      className="min-h-screen bg-cover bg-center p-8 text-black relative"
+      style={{ backgroundImage: `url(${Fundo})` }}
+    >
+      <Link to="/" className="absolute top-5 left-5 text-green-800 font-bold bg-white/80 px-3 py-1 rounded">
         &#8592; Voltar para a página principal
       </Link>
 
-      <div className="max-w-xl mx-auto bg-white p-6 rounded shadow mt-12">
+      <div className="max-w-xl mx-auto bg-white/90 p-6 rounded shadow mt-12">
         <h1 className="text-2xl font-bold mb-4">Detalhes da Empresa</h1>
         {erro ? (
           <p className="text-red-600 font-medium"><strong>Erro:</strong> {erro}</p>
@@ -26,7 +29,7 @@ export default function Detalhes() {
           </>
         )}
         <div className="mt-4">
-          <Link to="/buscar_instituicoes" className="text-blue-700 underline">
+          <Link to="/buscar" className="text-blue-700 underline">
             Voltar
           </Link>
         </div>

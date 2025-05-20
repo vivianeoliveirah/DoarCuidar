@@ -20,12 +20,11 @@ export default function Login() {
       style={{ backgroundImage: `url(${Fundo})` }}
     >
       {/* Botão de Voltar */}
-      <button
-        onClick={() => navigate("/")}
-        className="absolute top-4 left-4 text-white bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-700 transition"
-      >
-        &#8592; Voltar para Home
-      </button>
+      <div className="absolute top-4 left-4">
+        <Link to="/" className="text-white bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 transition text-sm">
+          &#8592; Voltar
+        </Link>
+      </div>
 
       {/* Formulário de Login */}
       <div className="w-full max-w-md bg-white bg-opacity-90 p-6 rounded-xl shadow-md">

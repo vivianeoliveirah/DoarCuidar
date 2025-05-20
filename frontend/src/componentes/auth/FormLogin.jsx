@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Logo from "../../assets/LogoDoarCuidar.png";
 import Fundo from "../../assets/fundo.png";
 
@@ -7,7 +7,6 @@ export default function FormLogin() {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
-  const navigate = useNavigate(); // Para navegar de volta
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -20,12 +19,12 @@ export default function FormLogin() {
       style={{ backgroundImage: `url(${Fundo})` }}
     >
       {/* Botão de Voltar para Home */}
-      <button
-        onClick={() => navigate("/")}
-        className="absolute top-4 left-4 text-white bg-blue-600 px-4 py-2 rounded-md hover:bg-blue-700 transition"
+      <Link
+        to="/"
+        className="absolute top-6 left-6 flex items-center text-sm text-white bg-blue-600 px-3 py-1.5 rounded-md hover:bg-blue-700 shadow-md transition"
       >
-        &#8592; Voltar para Home
-      </button>
+        <span className="text-lg mr-2">&#8592;</span> Voltar
+      </Link>
 
       <form
         onSubmit={handleSubmit}
