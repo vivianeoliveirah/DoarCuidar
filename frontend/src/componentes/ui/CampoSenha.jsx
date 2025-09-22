@@ -1,25 +1,39 @@
-// src/componentes/ui/CampoSenha.jsx
 import { useState } from "react";
+import Button from "@/componentes/ui/Button";
 
-export default function CampoSenha({ value, onChange }) {
-  const [mostrarSenha, setMostrarSenha] = useState(false);
+export default function CampoSenha({
+  id = "senha",
+  value,
+  onChange,
+  placeholder = "Senha",
+  required = true,
+  className = "",
+}) {
+  const [mostrar, setMostrar] = useState(false);
 
   return (
-    <div className="relative mb-4">
+    <div className="relative">
       <input
-        type={mostrarSenha ? "text" : "password"}
+        id={id}
+        type={mostrar ? "text" : "password"}
         value={value}
         onChange={onChange}
-        className="border p-3 rounded w-full"
-        required
+        placeholder={placeholder}
+        required={required}
+        className={`w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-600 pr-24 ${className}`}
       />
-      <button
+      <Button
         type="button"
-        onClick={() => setMostrarSenha(!mostrarSenha)}
-        className="absolute right-3 top-3 text-blue-600 hover:underline text-sm"
+        variant="ghost"
+        size="sm"
+        onClick={() => setMostrar(!mostrar)}
+        className="absolute right-2 top-1.5"
+        aria-pressed={mostrar}
+        aria-controls={id}
+        aria-label={mostrar ? "Ocultar senha" : "Mostrar senha"}
       >
-        {mostrarSenha ? "Ocultar" : "Mostrar"}
-      </button>
+        {mostrar ? "Ocultar" : "Mostrar"}
+      </Button>
     </div>
   );
 }
