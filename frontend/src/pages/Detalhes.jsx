@@ -11,9 +11,12 @@ export default function Detalhes() {
       className="min-h-screen bg-cover bg-center p-8 text-black relative"
       style={{ backgroundImage: `url(${Fundo})` }}
     >
-      <Link to="/" className="absolute top-5 left-5 text-green-800 font-bold bg-white/80 px-3 py-1 rounded">
-        &#8592; Voltar para a página principal
-      </Link>
+      <Link
+  to="/"
+  className="absolute top-5 left-5 text-white font-bold bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded transition"
+>
+  &#8592; Voltar para a página principal
+</Link>
 
       <div className="max-w-xl mx-auto bg-white/90 p-6 rounded shadow mt-12">
         <h1 className="text-2xl font-bold mb-4">Detalhes da Empresa</h1>

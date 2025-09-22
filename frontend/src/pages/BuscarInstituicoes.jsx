@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Layout from "../componentes/layout/Layout";
 import Fundo from "../assets/fundo.png";
+import CardInstituicao from "../componentes/instituicoes/CardInstituicao";
 
 export default function BuscarInstituicoes() {
   const [palavraChave, setPalavraChave] = useState("");
@@ -10,12 +11,19 @@ export default function BuscarInstituicoes() {
       nome: "Casa Solidária",
       cnpj: "00.000.000/0001-00",
       estado: "SP",
-      email: "contato@casasolidaria.org"
-    }
+      email: "contato@casasolidaria.org",
+    },
+    {
+      nome: "Ação Cidadã",
+      cnpj: "11.111.111/0001-11",
+      estado: "RJ",
+      email: "contato@acaocidada.org",
+    },
   ]);
 
   const handleBuscar = (e) => {
     e.preventDefault();
+    // Aqui você poderia implementar a lógica de filtro local se desejar
   };
 
   return (
@@ -24,8 +32,10 @@ export default function BuscarInstituicoes() {
         className="min-h-screen bg-cover bg-center bg-no-repeat p-6"
         style={{ backgroundImage: `url(${Fundo})` }}
       >
-        <div className="max-w-4xl mx-auto bg-white/90 p-6 rounded-xl shadow-md">
-          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Buscar Instituições</h2>
+        <div className="max-w-5xl mx-auto bg-white/90 p-6 rounded-xl shadow-md">
+          <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+            Buscar Instituições
+          </h2>
 
           <form onSubmit={handleBuscar} className="flex flex-col md:flex-row gap-4 mb-6">
             <input
@@ -50,16 +60,16 @@ export default function BuscarInstituicoes() {
             </button>
           </form>
 
-          <ul className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {instituicoes.map((inst, idx) => (
-              <li key={idx} className="p-4 border rounded bg-white shadow-sm">
-                <h3 className="text-lg font-bold">{inst.nome}</h3>
-                <p>CNPJ: {inst.cnpj}</p>
-                <p>Estado: {inst.estado}</p>
-                <p>Email: {inst.email}</p>
-              </li>
+              <CardInstituicao
+                key={idx}
+                nome={inst.nome}
+                estado={inst.estado}
+                descricao={`CNPJ: ${inst.cnpj} | Email: ${inst.email}`}
+              />
             ))}
-          </ul>
+          </div>
         </div>
       </div>
     </Layout>
