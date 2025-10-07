@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom"; 
 import Fundo from "../../assets/fundo.png";
 
 export default function HeroSection() {
@@ -16,9 +17,15 @@ export default function HeroSection() {
           <p className="text-sm text-gray-800 mb-2">
             Consulta CNPJ oficial registrado na Receita Federal do Brasil
           </p>
-          <p className="text-red-700 font-semibold">
+          <p className="text-red-700 font-semibold mb-4">
             Para pesquisar instituições, faça login ou crie uma conta.
           </p>
+          <Link
+            to="/buscar"
+            className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
+          >
+            Ver instituições
+          </Link>
         </div>
 
         {/* Citação */}
@@ -39,3 +46,4 @@ export default function HeroSection() {
     </section>
   );
 }
+

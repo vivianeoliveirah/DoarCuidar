@@ -1,150 +1,116 @@
-"""
-Este módulo define as rotas para o aplicativo Flask.
-"""
-import logging
-from flask import render_template, request, redirect, url_for, session, flash
-from app import app
-from app.consulta_empresas import buscar_empresas
-from app.models import db, Usuario, Donatario
-from werkzeug.security import generate_password_hash, check_password_hash
+from flask import Blueprint, request, jsonify
+import requests
+from app.models import Donatario, Doacao, db
+from app.consulta_empresas import brasilapi_get_cnpj, map_brasilapi_to_item, listar_ufs, is_cnpj
 
-logging.basicConfig(level=logging.DEBUG)
+bp = Blueprint("api", __name__, url_prefix="/api")
 
-@app.route('/')
-def index():
-    """Página inicial do site."""
-    return render_template('index.html')  # Renderiza o formulário de pesquisa
+@bp.get("/health")
+def health():
+    return jsonify({"status": "ok"})
 
-
-@app.route('/pesquisar', methods=['POST'])
-def pesquisar():
-    logging.debug("Iniciando a rota /pesquisar")
-    client_id = "SEU_CLIENT_ID"
-    client_secret = "SEU_SECRET"
-    palavra_chave = request.form.get('palavra_chave')  # Obtém a palavra-chave do formulário
-    estado = request.form.get('estado')  # Obtém o estado do formulário
-
-    if not client_id or not client_secret:
-        erro = "Credenciais de autenticação não configuradas."
-        logging.error(erro)
-        return render_template('resultados.html', erro=erro)
-
+@bp.get("/ufs")
+def ufs():
     try:
-        logging.debug(f"Buscando empresas com palavra-chave: {palavra_chave}, estado: {estado}")
-        empresas = buscar_empresas(client_id, client_secret, palavra_chave, estado)
-        empresas = resultado['empresas']
-        return render_template('resultados.html', empresas=empresas)
+        data = listar_ufs()
+        return jsonify([{"sigla": u["sigla"], "nome": u["nome"]} for u in data])
     except Exception as e:
-        logging.error(f"Erro ao buscar empresas: {str(e)}")
-        return render_template('resultados.html', erro="Erro interno no servidor.")
+        return jsonify({"erro": f"Falha ao consultar UFs: {e}"}), 502
 
+@bp.get("/cnpj/<cnpj>")
+def api_cnpj(cnpj: str):
+    try:
+        data = brasilapi_get_cnpj(cnpj)
+        item = map_brasilapi_to_item(data)
+        return jsonify(item), 200
+    except ValueError as ve:
+        return jsonify({"erro": str(ve)}), 400
+    except requests.exceptions.HTTPError as he:
+        try:
+            return jsonify({"erro": he.response.json().get("message", str(he))}), he.response.status_code
+        except Exception:
+            return jsonify({"erro": str(he)}), 502
+    except Exception as e:
+        return jsonify({"erro": f"Falha na consulta: {e}"}), 502
 
-from flask import session, redirect, url_for, flash
-
-@app.route('/buscar_instituicoes', methods=['GET', 'POST'])
+@bp.get("/instituicoes")
 def buscar_instituicoes():
-    if 'usuario_id' not in session:
-        flash('Você precisa estar logado para pesquisar instituições.')
-        return redirect(url_for('login'))
-    if request.method == 'POST':
-        palavra_chave = request.form['palavra_chave']
-        estado = request.form['estado']
-        resultado = buscar_empresas('', '', palavra_chave, estado)
-        empresas = resultado['empresas']
-        return render_template('resultados.html', empresas=empresas)
-    # Para GET ou outros casos, sempre retorne algo:
-    return render_template('resultados.html', empresas=[])
+    q = (request.args.get("q") or "").strip()
+    uf = (request.args.get("estado") or "").strip().upper()
 
+    if is_cnpj(q):
+        try:
+            data = brasilapi_get_cnpj(q)
+            item = map_brasilapi_to_item(data)
+            if uf and item.get("estado") and item["estado"].upper() != uf:
+                return jsonify([]), 200
+            return jsonify([{
+                "id": None,
+                "nome": item["nome"],
+                "estado": item["estado"],
+                "cnpj": item["cnpj"],
+                "email": item["email"],
+                "telefone": item["telefone"],
+            }]), 200
+        except Exception as e:
+            return jsonify({"erro": f"Falha na consulta: {e}"}), 502
+    else:
+        query = Donatario.query
+        if q:
+            query = query.filter(Donatario.nome.ilike(f"%{q}%"))
+        if uf:
+            query = query.filter(Donatario.estado == uf)
+        return jsonify([d.to_dict() for d in query.all()])
 
-@app.route('/cadastro', methods=['GET'])
-def cadastro():
-    return render_template('cadastro.html')
+@bp.get("/instituicoes/<int:id>")
+def detalhes_instituicao(id):
+    inst = Donatario.query.get(id)
+    if not inst:
+        return jsonify({"erro": "Instituição não encontrada"}), 404
+    return jsonify(inst.to_dict()), 200
 
+@bp.post("/instituicoes")
+def cadastrar_instituicao():
+    data = request.get_json()
+    if not data.get("nome") or not data.get("cnpj"):
+        return jsonify({"erro": "Campos obrigatórios ausentes"}), 400
+    try:
+        nova = Donatario(
+            nome=data["nome"],
+            cnpj=data["cnpj"],
+            telefone=data.get("telefone"),
+            endereco=data.get("endereco"),
+            estado=data.get("estado"),
+            usuario_id=data.get("usuario_id")
+        )
+        db.session.add(nova)
+        db.session.commit()
+        return jsonify(nova.to_dict()), 201
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao cadastrar: {e}"}), 400
 
-def validar_cpf(cpf):
-    cpf = ''.join(filter(str.isdigit, cpf))
-    if len(cpf) != 11 or cpf == cpf[0] * 11:
-        return False
-    for i in range(9, 11):
-        soma = sum(int(cpf[num]) * ((i+1) - num) for num in range(0, i))
-        digito = ((soma * 10) % 11) % 10
-        if digito != int(cpf[i]):
-            return False
-    return True
+@bp.post("/doacoes")
+def registrar_doacao():
+    data = request.get_json()
+    if not data.get("donatario_id") or not data.get("valor"):
+        return jsonify({"erro": "Campos obrigatórios ausentes"}), 400
+    try:
+        nova = Doacao(
+            donatario_id=data["donatario_id"],
+            valor=float(data["valor"]),
+            nome_doador=data.get("nome_doador"),
+            mensagem=data.get("mensagem")
+        )
+        db.session.add(nova)
+        db.session.commit()
+        return jsonify(nova.to_dict()), 201
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao registrar doação: {e}"}), 400
 
-@app.route('/cadastrar', methods=['POST'])
-def cadastrar():
-    nome = request.form['nome']
-    cpf = request.form['cpf']
-    email = request.form['email']
-    senha = generate_password_hash(request.form['senha'])
-
-    if not validar_cpf(cpf):
-        flash('CPF inválido.')
-        return redirect(url_for('cadastro'))
-
-    if Usuario.query.filter_by(email=email).first():
-        flash('E-mail já cadastrado. Faça login ou use outro e-mail.')
-        return redirect(url_for('cadastro'))
-
-    if Usuario.query.filter_by(cpf=cpf).first():
-        flash('CPF já cadastrado. Faça login ou use outro CPF.')
-        return redirect(url_for('cadastro'))
-
-    usuario = Usuario(nome=nome, cpf=cpf, email=email, senha=senha)
-    db.session.add(usuario)
-    db.session.commit()
-    session['usuario_id'] = usuario.id
-    return redirect(url_for('perfil'))
-
-
-@app.route('/perfil')
-def perfil():
-    usuario_id = session.get('usuario_id')
-    if not usuario_id:
-        return redirect(url_for('login'))
-    usuario = Usuario.query.get(usuario_id)
-    donatarios = Donatario.query.filter_by(usuario_id=usuario_id).all()
-    return render_template('perfil.html', usuario=usuario, donatarios=donatarios)
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        email = request.form['email']
-        senha = request.form['senha']
-        usuario = Usuario.query.filter_by(email=email).first()
-        if usuario and check_password_hash(usuario.senha, senha):
-            session['usuario_id'] = usuario.id
-            return redirect(url_for('perfil'))
-        else:
-            flash('E-mail ou senha inválidos.')
-            return redirect(url_for('login'))
-    return render_template('login.html')
-
-
-from flask import request, session, redirect, url_for, flash
-from app.models import Donatario, db
-
-@app.route('/salvar_instituicao', methods=['POST'])
-def salvar_instituicao():
-    if 'usuario_id' not in session:
-        flash('Você precisa estar logado para salvar instituições.')
-        return redirect(url_for('login'))
-    nome = request.form['nome']
-    cnpj = request.form['cnpj']
-    telefone = request.form['telefone']
-    endereco = request.form['endereco']
-    usuario_id = session['usuario_id']
-
-    donatario = Donatario(
-        usuario_id=usuario_id,
-        nome=nome,
-        cnpj=cnpj,
-        telefone=telefone,
-        endereco=endereco
-    )
-    db.session.add(donatario)
-    db.session.commit()
-    flash('Instituição salva com sucesso!')
-    return redirect(url_for('perfil'))
+@bp.get("/doacoes")
+def listar_doacoes():
+    inst_id = request.args.get("instituicao")
+    query = Doacao.query
+    if inst_id:
+        query = query.filter(Doacao.donatario_id == inst_id)
+    return jsonify([d.to_dict() for d in query.all()])

@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
@@ -7,6 +6,7 @@ import Login from "./pages/Login";
 import Perfil from "./pages/Perfil";
 import BuscarInstituicoes from "./pages/BuscarInstituicoes";
 import Detalhes from "./pages/Detalhes";
+import Doar from "./pages/Doar"; 
 
 function App() {
   return (
@@ -17,6 +17,7 @@ function App() {
       <Route path="/perfil" element={<Perfil />} />
       <Route path="/buscar" element={<BuscarInstituicoes />} />
       <Route path="/detalhes" element={<Detalhes />} />
+      <Route path="/doar/:id" element={<Doar />} />
     </Routes>
   );
 }

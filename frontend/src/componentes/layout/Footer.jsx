@@ -17,12 +17,6 @@ export default function Footer() {
           Conectando solidariedade com quem mais precisa.
         </p>
 
-        <nav aria-label="Links do rodapé" className="flex gap-4 text-sm">
-          <Link to="/buscar" className="text-gray-700 hover:text-brand-700">Buscar</Link>
-          <Link to="/cadastro" className="text-gray-700 hover:text-brand-700">Cadastro</Link>
-          <Link to="/login" className="text-gray-700 hover:text-brand-700">Login</Link>
-        </nav>
-
         <small className="text-xs text-gray-500 mt-1">
           © {ano} DoarCuidar. Todos os direitos reservados.
         </small>

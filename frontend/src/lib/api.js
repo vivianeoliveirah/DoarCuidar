@@ -10,7 +10,12 @@ async function request(path, opts = {}) {
 }
 
 export const api = {
-  saude: () => request("/api/saude"),
+  saude: () => request("/api/health"),
   listarInstituicoes: (q = "", estado = "") =>
     request(`/api/instituicoes?q=${encodeURIComponent(q)}&estado=${estado}`),
+  registrarDoacao: (data) =>
+    request("/api/doacoes", {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 };

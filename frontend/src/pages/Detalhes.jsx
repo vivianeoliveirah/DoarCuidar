@@ -1,19 +1,40 @@
+// src/pages/Detalhes.jsx
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Fundo from "../assets/fundo.png";
+
+function cleanCnpj(v){ return String(v||"").replace(/\D/g, ""); }
+function formatCnpj(v){
+  const s = cleanCnpj(v);
+  if (s.length !== 14) return v ?? "—";
+  return `${s.slice(0,2)}.${s.slice(2,5)}.${s.slice(5,8)}/${s.slice(8,12)}-${s.slice(12)}`;
+}
 
 export default function Detalhes() {
   const { state } = useLocation();
   const navigate = useNavigate();
-  const empresa = state?.empresa;
-  const erro = state?.erro;
+  const [empresa, setEmpresa] = useState(state?.empresa || null);
+  const [erro, setErro] = useState(state?.erro || "");
 
-  // Se abrir a página sem vir da lista, redireciona para /buscar
   useEffect(() => {
-    if (!empresa && !erro) {
+    const cnpj = cleanCnpj(state?.cnpj || empresa?.ni);
+    if (!empresa && !erro && cnpj) {
+      (async () => {
+        try {
+          const r = await fetch(`/api/cnpj/${cnpj}`);
+          const js = await r.json();
+          if (!r.ok) throw new Error(js?.erro || "Falha ao consultar CNPJ");
+          setEmpresa(js);
+        } catch (e) {
+          setErro(String(e.message));
+        }
+      })();
+    }
+    if (!empresa && !erro && !cnpj) {
       navigate("/buscar", { replace: true, state: { aviso: "Selecione uma instituição para ver detalhes." } });
     }
-  }, [empresa, erro, navigate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (!empresa && !erro) return null;
 
@@ -49,7 +70,7 @@ export default function Detalhes() {
 
               <div>
                 <dt className="font-semibold">CNPJ</dt>
-                <dd>{empresa?.ni ?? "—"}</dd>
+                <dd>{formatCnpj(empresa?.ni) ?? "—"}</dd>
               </div>
 
               <div>

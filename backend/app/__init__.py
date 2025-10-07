@@ -1,18 +1,25 @@
-"""
-Este módulo inicializa o aplicativo Flask.
-"""
-
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
+from flask_migrate import Migrate
 
-app = Flask(__name__, template_folder="../templates")
-app.secret_key = 'doarcuidar$2025!@#segredo'  # Coloque uma chave secreta forte!
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///doarcuidar.db'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy()
+migrate = Migrate()
 
-from app.models import db
-db.init_app(app)
+def create_app():
+    app = Flask(__name__, instance_relative_config=True)
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-doarcuidar')
+    os.makedirs(app.instance_path, exist_ok=True)
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{os.path.join(app.instance_path, 'doarcuidar.db')}"
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-from app import routes  # Importa as rotas
+    db.init_app(app)
+    migrate.init_app(app, db)
+    CORS(app)
 
+    from app import models  # garante que os modelos sejam registrados
+    from app.routes import bp as api_bp
+    app.register_blueprint(api_bp)
 
+    return app
