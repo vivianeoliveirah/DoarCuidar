@@ -13,6 +13,9 @@ export default function CampoSenha({
 
   return (
     <div className="relative">
+      <label htmlFor={id} className="block text-sm font-medium mb-1">
+        {placeholder}
+      </label>
       <input
         id={id}
         type={mostrar ? "text" : "password"}
@@ -20,6 +23,7 @@ export default function CampoSenha({
         onChange={onChange}
         placeholder={placeholder}
         required={required}
+        aria-label={placeholder}
         className={`w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-600 pr-24 ${className}`}
       />
       <Button

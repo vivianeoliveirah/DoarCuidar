@@ -1,59 +1,26 @@
-import React from "react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
-import Logo from "../../assets/LogoDoarCuidar.png";
-import Button from "@/componentes/ui/Button";
-
-function NavItem({ to, children }) {
-  return (
-    <NavLink
-      to={to}
-      className={({ isActive }) =>
-        `px-2 py-1 rounded hover:text-blue-700 ${isActive ? "font-semibold text-blue-700" : "text-gray-700"}`
-      }
-      end
-    >
-      {children}
-    </NavLink>
-  );
-}
+import { Heart } from "lucide-react";
 
 export default function Navbar() {
-  const navigate = useNavigate();
-  const logado = Boolean(localStorage.getItem("token"));
-
-  function sair() {
-    localStorage.removeItem("token");
-    localStorage.removeItem("usuario");
-    navigate("/");
-  }
-
   return (
-    <nav className="bg-gray-100 shadow-md py-3 px-6">
-      <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-        <Link to="/" className="flex items-center gap-2">
-          <img src={Logo} alt="Logo DoarCuidar" className="h-10 w-auto" />
-          <span className="font-bold text-xl text-gray-800">DoarCuidar</span>
-        </Link>
-
-        <div className="flex items-center gap-2">
-          <NavItem to="/">Home</NavItem>
-          <NavItem to="/buscar">Buscar</NavItem>
-
-          {!logado ? (
-            <>
-              <NavItem to="/cadastro">Cadastro</NavItem>
-              <NavItem to="/login">Login</NavItem>
-            </>
-          ) : (
-            <>
-              <NavItem to="/perfil">Perfil</NavItem>
-              <Button variant="ghost" size="sm" onClick={sair} aria-label="Sair da sessão">
-                Sair
-              </Button>
-            </>
-          )}
+    <header className="sticky top-0 z-40 backdrop-blur bg-white/80 border-b border-slate-200">
+      <div className="mx-auto max-w-7xl h-16 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <a className="flex items-center gap-2" href="/">
+          <div className="h-9 w-9 rounded-full bg-emerald-600 grid place-content-center shadow-sm">
+            <Heart className="h-5 w-5 text-white" />
+          </div>
+          <span className="font-semibold tracking-tight">Doar<span className="text-emerald-600">Cuidar</span></span>
+        </a>
+        <nav className="hidden md:flex items-center gap-6 text-sm">
+          <a href="/buscar" className="hover:text-emerald-700">Buscar</a>
+          <a href="/cadastro-instituicao" className="hover:text-emerald-700">Cadastrar instituição</a>
+        </nav>
+        <div className="flex items-center gap-3">
+          <a href="/login" className="text-sm hover:text-emerald-700">Login</a>
+          <a href="/doar" className="rounded-2xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700">
+            Doar agora
+          </a>
         </div>
       </div>
-    </nav>
+    </header>
   );
 }

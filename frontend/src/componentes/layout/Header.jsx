@@ -1,17 +1,19 @@
+// src/componentes/layout/Header.jsx
 import React, { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router-dom";
-import { Menu, X, Home, Search, UserRound, LogIn, UserPlus, LogOut, HeartHandshake } from "lucide-react";
-import Logo from "../../assets/LogoDoarCuidar.png";
-import Button from "@/componentes/ui/Button";
+import {
+  Menu, X, Home, Search, UserRound, LogIn, UserPlus, LogOut, HeartHandshake, Heart
+} from "lucide-react";
 
+// --- Mini componente de item do menu
 function NavItem({ to, icon: Icon, children, onClick }) {
   return (
     <NavLink
       to={to}
       onClick={onClick}
       className={({ isActive }) =>
-        `flex items-center gap-1.5 px-2 py-1 rounded hover:text-brand-700 ${
-          isActive ? "font-semibold text-brand-700" : "text-gray-700"
+        `flex items-center gap-1.5 px-2 py-1 rounded hover:text-emerald-700 ${
+          isActive ? "font-semibold text-emerald-700" : "text-gray-700"
         }`
       }
       end
@@ -38,12 +40,16 @@ export default function Header() {
   const navId = "primary-navigation";
 
   return (
-    <header className="bg-gray-100 py-3 px-4 shadow-md">
-      <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
-        {/* Brand */}
-        <Link to="/" className="flex items-center gap-2" onClick={close}>
-          <img src={Logo} alt="Logo DoarCuidar" className="h-10 w-auto" />
-          <span className="font-bold text-xl text-gray-800">DoarCuidar</span>
+    <header className="sticky top-0 z-40 backdrop-blur bg-white/80 border-b border-slate-200">
+      <div className="mx-auto max-w-7xl h-14 px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        {/* Logo igual ao footer (ícone + texto) */}
+        <Link to="/" onClick={close} className="flex items-center gap-2" aria-label="Página inicial">
+          <span className="h-8 w-8 rounded-full bg-emerald-600 grid place-content-center shadow-sm">
+            <Heart className="h-4 w-4 text-white" />
+          </span>
+          <span className="font-semibold tracking-tight">
+            Doar<span className="text-emerald-600">Cuidar</span>
+          </span>
         </Link>
 
         {/* Botão mobile */}
@@ -61,27 +67,35 @@ export default function Header() {
         <nav className="hidden md:flex items-center gap-2" aria-label="Navegação principal">
           <NavItem to="/" icon={Home}>Home</NavItem>
           <NavItem to="/buscar" icon={Search}>Buscar</NavItem>
+          <NavItem to="/cadastro-usuario" icon={UserPlus}>Cadastro Usuário</NavItem>
+          <NavItem to="/cadastro-instituicao" icon={UserPlus}>Cadastro Instituição</NavItem>
 
           {!logado ? (
-            <>
-              <NavItem to="/cadastro" icon={UserPlus}>Cadastro</NavItem>
-              <NavItem to="/login" icon={LogIn}>Login</NavItem>
-            </>
+            <NavItem to="/login" icon={LogIn}>Login</NavItem>
           ) : (
             <>
               <NavItem to="/perfil" icon={UserRound}>Perfil</NavItem>
-              <Button variant="ghost" size="sm" onClick={sair} aria-label="Sair da sessão">
-                <LogOut className="w-4 h-4 mr-1" aria-hidden />
+              <button
+                type="button"
+                onClick={sair}
+                className="flex items-center gap-1.5 px-2 py-1 text-gray-700 hover:text-emerald-700"
+                aria-label="Sair da sessão"
+              >
+                <LogOut className="w-4 h-4" aria-hidden />
                 Sair
-              </Button>
+              </button>
             </>
           )}
 
+          {/* Botão Doar agora no tom emerald */}
           <Link to="/buscar" className="ml-2">
-            <Button size="sm">
+            <button
+              type="button"
+              className="inline-flex items-center rounded-xl bg-emerald-600 px-3.5 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            >
               <HeartHandshake className="w-4 h-4 mr-1" aria-hidden />
               Doar agora
-            </Button>
+            </button>
           </Link>
         </nav>
       </div>
@@ -90,25 +104,24 @@ export default function Header() {
       {open && (
         <nav
           id={navId}
-          className="md:hidden mt-3 border-t pt-3 space-y-2"
+          className="md:hidden mt-2 border-t pt-2 space-y-2"
           aria-label="Navegação principal móvel"
         >
           <div className="flex flex-col px-2">
             <NavItem to="/" icon={Home} onClick={close}>Home</NavItem>
             <NavItem to="/buscar" icon={Search} onClick={close}>Buscar</NavItem>
+            <NavItem to="/cadastro-usuario" icon={UserPlus} onClick={close}>Cadastro Usuário</NavItem>
+            <NavItem to="/cadastro-instituicao" icon={UserPlus} onClick={close}>Cadastro Instituição</NavItem>
 
             {!logado ? (
-              <>
-                <NavItem to="/cadastro" icon={UserPlus} onClick={close}>Cadastro</NavItem>
-                <NavItem to="/login" icon={LogIn} onClick={close}>Login</NavItem>
-              </>
+              <NavItem to="/login" icon={LogIn} onClick={close}>Login</NavItem>
             ) : (
               <>
                 <NavItem to="/perfil" icon={UserRound} onClick={close}>Perfil</NavItem>
                 <button
                   type="button"
                   onClick={sair}
-                  className="flex items-center gap-1.5 px-2 py-1 text-gray-700 hover:text-brand-700"
+                  className="flex items-center gap-1.5 px-2 py-1 text-gray-700 hover:text-emerald-700"
                   aria-label="Sair da sessão"
                 >
                   <LogOut className="w-4 h-4" aria-hidden />
@@ -118,10 +131,13 @@ export default function Header() {
             )}
 
             <Link to="/buscar" onClick={close} className="mt-2 px-2">
-              <Button size="sm" className="w-full">
+              <button
+                type="button"
+                className="w-full inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              >
                 <HeartHandshake className="w-4 h-4 mr-1" aria-hidden />
                 Doar agora
-              </Button>
+              </button>
             </Link>
           </div>
         </nav>

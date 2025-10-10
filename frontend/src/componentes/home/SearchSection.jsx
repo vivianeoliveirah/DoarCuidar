@@ -1,101 +1,134 @@
-import { useEffect, useId, useState } from "react";
-import { useNavigate } from "react-router-dom";
+// src/componentes/home/SearchSection.jsx
+import { useId, useState, useMemo } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Search } from "lucide-react";
 
-const BASE = import.meta.env.VITE_API_URL ?? "";
+const UFs = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 
-export default function SearchSection() {
-  const [keyword, setKeyword] = useState("");
-  const [estado, setEstado] = useState("");
-  const [ufs, setUfs] = useState([]);
+const DEMO = [
+  { id:"sp-1", nome:"Instituto Esperança", cnpj:"12.345.678/0001-90", uf:"SP", desc:"Apoio a famílias vulneráveis com alimentação e educação." },
+  { id:"rj-1", nome:"Lar Solidário",       cnpj:"98.765.432/0001-10", uf:"RJ", desc:"Moradia assistida para idosos." },
+  { id:"mg-1", nome:"Projeto Semeando",     cnpj:"23.456.789/0001-55", uf:"MG", desc:"Oficinas de tecnologia e reforço escolar." },
+];
 
-  const navigate = useNavigate();
-  const idKey = useId();
+function onlyDigits(s=""){ return s.replace(/\D/g, ""); }
+
+export default function SearchSection({
+  compact = true,
+  limit = 3,           // quantos cards demo mostrar
+  showSeeAll = true,   // mostra o botão "Ver todas"
+}) {
+  const [q, setQ] = useState("");
+  const [uf, setUf] = useState("");
+  const idQ = useId();
   const idUf = useId();
+  const navigate = useNavigate();
 
-  // Carrega UFs do backend
-  useEffect(() => {
-    let isMounted = true;
-    (async () => {
-      try {
-        const res = await fetch(`${BASE}/api/ufs`);
-        if (!res.ok) throw new Error();
-        const json = await res.json();
-        if (isMounted) setUfs(Array.isArray(json) ? json : []);
-      } catch {
-        if (isMounted) setUfs([]); // segue sem lista se falhar
-      }
-    })();
-    return () => { isMounted = false; };
-  }, []);
+  // filtra os DEMO de acordo com os campos (para a Home já parecer “viva”)
+  const demoFiltrado = useMemo(() => {
+    const qDigits = onlyDigits(q);
+    return DEMO.filter(i =>
+      (!q || i.nome.toLowerCase().includes(q.toLowerCase()) || onlyDigits(i.cnpj).includes(qDigits)) &&
+      (!uf || i.uf === uf)
+    );
+  }, [q, uf]);
 
-  const handleSubmit = (e) => {
+  function onSubmit(e) {
     e.preventDefault();
-    const params = new URLSearchParams();
-    if (keyword.trim()) params.set("q", keyword.trim());
-    if (estado.trim()) params.set("estado", estado.trim().toUpperCase());
-    navigate(`/buscar?${params.toString()}`);
-  };
+    const sp = new URLSearchParams();
+    if (q.trim()) sp.set("q", q.trim());
+    if (uf.trim()) sp.set("estado", uf.trim().toUpperCase());
+    navigate(`/buscar?${sp.toString()}`);
+  }
+
+  const sectionPad = compact ? "py-6 md:py-8" : "py-12 md:py-16";
 
   return (
-    <section className="py-8 px-4 bg-gray-50" aria-labelledby="titulo-busca">
-      <div className="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-md">
-        <h2 id="titulo-busca" className="text-2xl font-bold mb-4 text-center">
-          Buscar Instituições
-        </h2>
+    <section id="buscar" className={sectionPad}>
+      <h2 className="text-center text-2xl md:text-3xl font-semibold tracking-tight">Buscar Instituições</h2>
 
-        <form
-          onSubmit={handleSubmit}
-          className="flex flex-col md:flex-row gap-4"
-          role="search"
-          aria-label="Buscar instituições por nome/CNPJ e estado"
-        >
-          <div className="flex-1">
-            <label htmlFor={idKey} className="sr-only">Palavra-chave ou CNPJ</label>
+      {/* Form */}
+      <form onSubmit={onSubmit} className="mx-auto mt-6 max-w-3xl">
+        <div className="flex flex-col md:flex-row gap-3">
+          <div className="relative flex-1">
+            <label htmlFor={idQ} className="sr-only">Palavra-chave ou CNPJ</label>
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400"/>
             <input
-              id={idKey}
-              type="text"
+              id={idQ}
+              aria-label="Palavra-chave ou CNPJ"
+              value={q}
+              onChange={(e)=>setQ(e.target.value)}
               placeholder="Palavra-chave ou CNPJ (14 dígitos)"
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              className="border p-3 rounded-md w-full"
-              aria-describedby="ajuda-keyword"
+              className="w-full rounded-2xl border border-slate-300 bg-white px-10 py-3 shadow-sm outline-none focus:ring-2 focus:ring-emerald-600"
             />
-            <p id="ajuda-keyword" className="text-xs text-gray-600 mt-1">
-              Busque por parte do nome ou informe um CNPJ completo.
-            </p>
           </div>
 
-          <div className="w-full md:w-32">
-            <label htmlFor={idUf} className="sr-only">Estado (UF)</label>
-            <input
+          <div>
+            <label htmlFor={idUf} className="sr-only">UF</label>
+            <select
               id={idUf}
-              type="text"
-              list="lista-ufs-home"
-              placeholder="UF"
-              value={estado}
-              onChange={(e) => setEstado(e.target.value.toUpperCase())}
-              className="border p-3 rounded-md w-full text-center"
-              maxLength={2}
-            />
-            <datalist id="lista-ufs-home">
-              {ufs.map((u) => (
-                <option key={u.sigla} value={u.sigla}>{u.nome}</option>
-              ))}
-            </datalist>
+              aria-label="UF"
+              value={uf}
+              onChange={(e)=>setUf(e.target.value)}
+              className="md:w-28 w-full rounded-2xl border border-slate-300 bg-white px-4 py-3 shadow-sm focus:ring-2 focus:ring-emerald-600"
+            >
+              <option value="">UF</option>
+              {UFs.map(u => <option key={u} value={u}>{u}</option>)}
+            </select>
           </div>
 
           <button
             type="submit"
-            className="bg-rose-600 text-white px-6 py-3 rounded-md hover:bg-rose-700 transition"
+            className="rounded-2xl bg-emerald-600 px-6 py-3 text-white font-medium shadow-sm hover:bg-emerald-700"
           >
             Buscar
           </button>
-        </form>
+        </div>
+      </form>
 
-        
-        <p className="text-sm text-gray-700 mt-2 text-center">
-          Após encontrar a instituição, você poderá fazer uma doação diretamente.
-        </p>
+      {/* Cards DEMO (Home) */}
+      <div className="mx-auto mt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {demoFiltrado.slice(0, limit).map((it) => (
+            <article
+              key={it.id}
+              className="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm
+                         hover:shadow-md hover:border-slate-300 transition-[box-shadow,border-color]"
+            >
+              <h3 className="font-semibold leading-tight group-hover:text-emerald-700">{it.nome}</h3>
+              <p className="text-xs text-slate-500">{it.uf} • CNPJ {it.cnpj}</p>
+              <p className="mt-3 text-sm text-slate-600 line-clamp-3">{it.desc}</p>
+
+              <div className="mt-4 flex gap-2">
+                <Link
+                  to="/detalhes"
+                  state={{ cnpj: onlyDigits(it.cnpj), instituicao: it }}
+                  className="rounded-xl px-3 py-2 text-sm bg-slate-900 text-white hover:bg-slate-800"
+                >
+                  Detalhes
+                </Link>
+                <Link
+                  to={`/doar/${it.id}`}
+                  className="rounded-xl px-3 py-2 text-sm bg-emerald-600 text-white hover:bg-emerald-700"
+                >
+                  Doar
+                </Link>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        {showSeeAll && (
+          <div className="mt-6 flex justify-center">
+            <Link
+              to="/buscar"
+              className="inline-flex items-center rounded-xl border border-emerald-600 px-4 py-2
+                         text-emerald-700 font-medium hover:bg-emerald-50"
+            >
+              Ver todas as instituições
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

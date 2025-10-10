@@ -1,25 +1,19 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import Logo from "../../assets/LogoDoarCuidar.png";
+import { Heart } from "lucide-react";
 
 export default function Footer() {
-  const ano = new Date().getFullYear();
-
   return (
-    <footer className="bg-gray-100 py-6 mt-auto" role="contentinfo" aria-label="Rodapé">
-      <div className="container mx-auto px-4 max-w-6xl flex flex-col items-center gap-2 text-center">
-        <Link to="/" className="flex items-center justify-center gap-2">
-          <img src={Logo} alt="Logo DoarCuidar" className="h-8 w-auto" />
-          <span className="font-bold text-brand-700">DoarCuidar</span>
-        </Link>
-
-        <p className="text-sm text-gray-700">
-          Conectando solidariedade com quem mais precisa.
-        </p>
-
-        <small className="text-xs text-gray-500 mt-1">
-          © {ano} DoarCuidar. Todos os direitos reservados.
-        </small>
+    <footer className="border-t border-slate-200 bg-white">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-4 text-sm text-slate-600
+                      flex flex-col md:flex-row items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <div className="h-7 w-7 rounded-full bg-emerald-600 grid place-content-center text-white">
+            <Heart className="h-4 w-4" />
+          </div>
+          <span className="font-semibold tracking-tight">
+            Doar<span className="text-emerald-600">Cuidar</span>
+          </span>
+        </div>
+        <p>© 2025 DoarCuidar. Todos os direitos reservados.</p>
       </div>
     </footer>
   );

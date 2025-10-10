@@ -1,49 +1,54 @@
-import React from "react";
-import { Link } from "react-router-dom"; 
-import Fundo from "../../assets/fundo.png";
+import { ShieldCheck, Users, Quote } from "lucide-react";
 
 export default function HeroSection() {
   return (
-    <section
-      aria-label="Apresentação do DoarCuidar"
-      className="h-auto py-16 px-6 bg-cover bg-center"
-      style={{ backgroundImage: `url(${Fundo})` }}
-    >
-      <div className="bg-white/90 rounded-xl shadow-md max-w-6xl mx-auto p-6 md:p-10 flex flex-col md:flex-row gap-8">
-        {/* Texto principal */}
-        <div className="flex-1 text-center md:text-left">
-          <h1 className="text-4xl font-bold text-black mb-4">Bem-vindo ao DoarCuidar</h1>
-          <p className="text-lg text-black mb-1">Encontre uma instituição para doar</p>
-          <p className="text-sm text-gray-800 mb-2">
-            Consulta CNPJ oficial registrado na Receita Federal do Brasil
-          </p>
-          <p className="text-red-700 font-semibold mb-4">
-            Para pesquisar instituições, faça login ou crie uma conta.
-          </p>
-          <Link
-            to="/buscar"
-            className="inline-block bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-          >
-            Ver instituições
-          </Link>
-        </div>
+    <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-sky-50">
+      {/* halo decorativo para preencher a lateral sem conteúdo */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute right-[-8rem] top-6 h-64 w-64 rounded-full bg-emerald-200/40 blur-3xl"
+      />
 
-        {/* Citação */}
-        <aside
-          className="flex-1 bg-yellow-100 p-4 md:p-6 rounded-xl text-center text-gray-800 shadow-inner"
-          aria-label="Citação sobre caridade"
-        >
-          <h2 className="font-semibold mb-2 text-sm text-gray-700">
-            2ª SURATA AL BÁCARA - A VACA 215
-          </h2>
-          <p className="text-sm leading-relaxed">
-            "Perguntam-te que parte devem gastar (em caridade). Dize-lhes: Toda a caridade que fizerdes,
-            deve ser para os pais, parentes, órfãos, necessitados e viajantes (desamparados). E sabei que
-            todo o bem que fizerdes, Allah dele tomará consciência."
+      <div className="mx-auto max-w-6xl px-6 py-10 md:py-12">
+        {/* bloco do texto mais largo */}
+        <div className="mx-auto max-w-4xl text-center">
+          <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">
+            Encontre uma instituição{" "}
+            <span className="block text-emerald-600">e faça a diferença hoje</span>
+          </h1>
+
+          <p className="mt-4 text-slate-600">
+            Consulte CNPJ oficial, filtre por estado e conecte-se com causas reais.
           </p>
-        </aside>
+
+          <figure
+            aria-labelledby="quote-title"
+            className="mt-5 inline-block text-left rounded-2xl border border-amber-200 bg-amber-50/70 text-amber-900 shadow-sm"
+          >
+            <figcaption className="flex items-center gap-2 px-5 pt-3">
+              <Quote className="h-4 w-4" />
+              <p id="quote-title" className="text-[11px] font-semibold tracking-wide">
+                2ª SURATA AL BÁCARA – A VACA 215
+              </p>
+            </figcaption>
+            <blockquote className="px-5 pb-4 pt-1 text-[13px] leading-relaxed max-w-2xl">
+              “Perguntam-te que parte devem gastar (em caridade). Dize-lhes: Toda a
+              caridade que fizerdes, deve ser para os pais, parentes, órfãos,
+              necessitados e viajantes (desamparados). E sabei que todo o bem que
+              fizerdes, Allah dele tomará consciência.”
+            </blockquote>
+          </figure>
+
+          <div className="mt-5 flex items-center justify-center gap-6 text-sm text-slate-500">
+            <span className="inline-flex items-center gap-2">
+              <ShieldCheck className="h-4 w-4" /> Dados verificados
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <Users className="h-4 w-4" /> Comunidade engajada
+            </span>
+          </div>
+        </div>
       </div>
     </section>
   );
 }
-
