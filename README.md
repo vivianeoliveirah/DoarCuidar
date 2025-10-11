@@ -1,20 +1,70 @@
-🚧 {projeto-integrador-II-DoarCuidar} - Em contrução 🚧 </h1> <p align="center"> <a href="#-Descrição-do-entregável">Projeto integrador II</a> • <a href="#-sobre-o-projeto">Sobre</a> • <a href="#-funcionalidades">Funcionalidades</a> • <a href="#-layout">Layout</a> • <a href="#-como-executar-o-projeto">Como executar</a> • <a href="#-tecnologias">Tecnologias</a> • <a href="#-autor">Autor</a> • <a href="#user-content--licença">Licença</a> </p> <!-- ---------------------------------------------------------------------- --> ## 📄 Descrição do entregável Este repositório contém o **front-end** do DoarCuidar: - **SPA** (React + Vite) com páginas: Home, Buscar Instituições, Detalhes, Doar, Login, Perfil, Cadastros. - **Componentes** reutilizáveis (botões, formulários, cards). - **Integrações** com **Firebase/Firestore** (cadastro de usuários). - **Modo DEMO** com dados fictícios quando a API real não está disponível. --- <!-- ---------------------------------------------------------------------- --> ## 💻 Sobre o projeto O **DoarCuidar** conecta pessoas a instituições sérias, facilitando a busca por ONGs, consulta por CNPJ/UF e a jornada de doação. Projeto do **Integrador I**, aproximando teoria e prática em um cenário de mundo do trabalho. <!-- LINHA DE DIVISÃO: --> --- <!-- ---------------------------------------------------------------------- --> ## ⚙️ Funcionalidades - [x] **Home** com hero e galeria temática. - [x] **Busca de instituições** por palavra-chave/CNPJ e filtro por **UF**. - [x] Cards com **Detalhes** e **Doar**. - [x] **Página de Doação** (com fallback DEMO). - [x] **Cadastro de usuário** (Firestore) e **Login** “local” (localStorage). - [x] **Perfil** do usuário (edição básica). - [x] Tema visual consistente (gradientes, sombras suaves, ícones Lucide). - [x] Acessibilidade básica (labels, aria-attrs, foco). > **Modo DEMO:** caso a API não responda JSON, o app usa uma lista de instituições fictícias para apresentação. --- <!-- ---------------------------------------------------------------------- --> ## 🎨 Layout > Substitua os caminhos abaixo pelos seus prints reais. - **Home**: assets/prints/home.png - **Buscar Instituições**: assets/prints/buscar.png - **Cadastro de Usuário**: assets/prints/cadastro-usuario.png - **Cadastro de Instituição**: assets/prints/cadastro-instituicao.png - **Detalhes / Doar**: assets/prints/detalhes-doar.png Em edição --- <!-- ---------------------------------------------------------------------- --> <!-- MODELO DE COMO EXECUTAR O PROJETO --> ## 🚀 Como executar o projeto 1. **Clone** o projeto
-bash
-   git clone https://github.com/<seu-usuario>/<seu-repo>.git
-   cd <seu-repo>
-Instale as dependências
+<h1 align="center">🚧 Projeto Integrador II — DoarCuidar 🚧</h1>
 
-bash
-Copiar código
-npm install
-## ou
-yarn
-Crie o arquivo de ambiente
+<p align="center">
+  <a href="#-descrição-do-entregável">Descrição</a> •
+  <a href="#-sobre-o-projeto">Sobre</a> •
+  <a href="#-funcionalidades">Funcionalidades</a> •
+  <a href="#-layout">Layout</a> •
+  <a href="#-como-executar-o-projeto">Como executar</a> •
+  <a href="#-tecnologias">Tecnologias</a> •
+  <a href="#-autor">Autor</a> •
+  <a href="#-licença">Licença</a>
+</p>
 
-bash
-Copiar código
-cp .env.example .env
-Preencha as chaves (veja a seção Variáveis de ambiente).
+---
+
+## 📄 Descrição do entregável
+
+Este repositório contém o **front-end** do DoarCuidar:
+
+- SPA (React + Vite) com páginas: Home, Buscar Instituições, Detalhes, Doar, Login, Perfil, Cadastros.
+- Componentes reutilizáveis (botões, formulários, cards).
+- Integrações com **Firebase/Firestore** (cadastro de usuários).
+- Modo DEMO com dados fictícios quando a API real não está disponível.
+
+---
+
+## 💻 Sobre o projeto
+
+O **DoarCuidar** conecta pessoas a instituições sérias, facilitando a busca por ONGs, consulta por CNPJ/UF e a jornada de doação.  
+Projeto do **Integrador II**, aproximando teoria e prática em um cenário de mundo do trabalho.
+
+---
+
+## ⚙️ Funcionalidades
+
+- [x] Home com hero e galeria temática
+- [x] Busca de instituições por palavra-chave/CNPJ e filtro por UF
+- [x] Cards com Detalhes e Doar
+- [x] Página de Doação (com fallback DEMO)
+- [x] Cadastro de usuário (Firestore) e Login local (localStorage)
+- [x] Perfil do usuário (edição básica)
+- [x] Tema visual consistente (gradientes, sombras suaves, ícones Lucide)
+- [x] Acessibilidade básica (labels, aria-attrs, foco)
+
+> **Modo DEMO:** caso a API não responda JSON, o app usa uma lista de instituições fictícias para apresentação.
+
+---
+
+## 🎨 Layout
+
+> Substitua os caminhos abaixo pelos seus prints reais:
+
+- Home: `assets/prints/home.png`
+- Buscar Instituições: `assets/prints/buscar.png`
+- Cadastro de Usuário: `assets/prints/cadastro-usuario.png`
+- Cadastro de Instituição: `assets/prints/cadastro-instituicao.png`
+- Detalhes / Doar: `assets/prints/detalhes-doar.png`
+
+---
+
+## 🚀 Como executar o projeto
+
+1. **Clone o projeto**
+```bash
+git clone https://github.com/<seu-usuario>/<seu-repo>.git
+cd <seu-repo>
+
 
 Execute em dev
 
