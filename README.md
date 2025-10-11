@@ -1,108 +1,148 @@
-<h1 align="center"> 
-🚧 {projeto-integrador-I-doacao-ongs} - Em contrução 🚧
-</h1>
+🚧 {projeto-integrador-II-DoarCuidar} - Em contrução 🚧 </h1> <p align="center"> <a href="#-Descrição-do-entregável">Projeto integrador II</a> • <a href="#-sobre-o-projeto">Sobre</a> • <a href="#-funcionalidades">Funcionalidades</a> • <a href="#-layout">Layout</a> • <a href="#-como-executar-o-projeto">Como executar</a> • <a href="#-tecnologias">Tecnologias</a> • <a href="#-autor">Autor</a> • <a href="#user-content--licença">Licença</a> </p> <!-- ---------------------------------------------------------------------- --> ## 📄 Descrição do entregável Este repositório contém o **front-end** do DoarCuidar: - **SPA** (React + Vite) com páginas: Home, Buscar Instituições, Detalhes, Doar, Login, Perfil, Cadastros. - **Componentes** reutilizáveis (botões, formulários, cards). - **Integrações** com **Firebase/Firestore** (cadastro de usuários). - **Modo DEMO** com dados fictícios quando a API real não está disponível. --- <!-- ---------------------------------------------------------------------- --> ## 💻 Sobre o projeto O **DoarCuidar** conecta pessoas a instituições sérias, facilitando a busca por ONGs, consulta por CNPJ/UF e a jornada de doação. Projeto do **Integrador I**, aproximando teoria e prática em um cenário de mundo do trabalho. <!-- LINHA DE DIVISÃO: --> --- <!-- ---------------------------------------------------------------------- --> ## ⚙️ Funcionalidades - [x] **Home** com hero e galeria temática. - [x] **Busca de instituições** por palavra-chave/CNPJ e filtro por **UF**. - [x] Cards com **Detalhes** e **Doar**. - [x] **Página de Doação** (com fallback DEMO). - [x] **Cadastro de usuário** (Firestore) e **Login** “local” (localStorage). - [x] **Perfil** do usuário (edição básica). - [x] Tema visual consistente (gradientes, sombras suaves, ícones Lucide). - [x] Acessibilidade básica (labels, aria-attrs, foco). > **Modo DEMO:** caso a API não responda JSON, o app usa uma lista de instituições fictícias para apresentação. --- <!-- ---------------------------------------------------------------------- --> ## 🎨 Layout > Substitua os caminhos abaixo pelos seus prints reais. - **Home**: assets/prints/home.png - **Buscar Instituições**: assets/prints/buscar.png - **Cadastro de Usuário**: assets/prints/cadastro-usuario.png - **Cadastro de Instituição**: assets/prints/cadastro-instituicao.png - **Detalhes / Doar**: assets/prints/detalhes-doar.png Em edição --- <!-- ---------------------------------------------------------------------- --> <!-- MODELO DE COMO EXECUTAR O PROJETO --> ## 🚀 Como executar o projeto 1. **Clone** o projeto
+bash
+   git clone https://github.com/<seu-usuario>/<seu-repo>.git
+   cd <seu-repo>
+Instale as dependências
 
-<p align="center">
- <a href="#-Descrição-do-entregável">Descrição do Entregável</a> •
- <a href="#-sobre-o-projeto">Sobre</a> •
- <a href="#-funcionalidades">Funcionalidades</a> •
- <a href="#-layout">Layout</a> • 
- <a href="#-como-executar-o-projeto">Como executar</a> • 
- <a href="#-tecnologias">Tecnologias</a> • 
- <a href="#-autor">Autor</a> • 
- <a href="#user-content--licença">Licença</a>
-</p>
+bash
+Copiar código
+npm install
+## ou
+yarn
+Crie o arquivo de ambiente
 
+bash
+Copiar código
+cp .env.example .env
+Preencha as chaves (veja a seção Variáveis de ambiente).
+
+Execute em dev
+
+bash
+Copiar código
+npm run dev
+## http://localhost:5173
+Build de produção
+
+bash
+Copiar código
+npm run build
+npm run preview
+🔧 Variáveis de ambiente
+Crie um arquivo .env (ou .env.local) na raiz:
+
+dotenv
+Copiar código
+## Liga o modo demonstração (dados fictícios)
+VITE_USE_DEMO=true
+
+## Base da API; com proxy do Vite pode ficar vazio
+VITE_API_URL=""
+
+## Firebase – se usar Firestore para cadastro de usuário
+VITE_FIREBASE_API_KEY=""
+VITE_FIREBASE_AUTH_DOMAIN=""
+VITE_FIREBASE_PROJECT_ID=""
+VITE_FIREBASE_STORAGE_BUCKET=""
+VITE_FIREBASE_MESSAGING_SENDER_ID=""
+VITE_FIREBASE_APP_ID=""
+Dica: com VITE_USE_DEMO=true o app usa dados fictícios quando a API não retornar JSON (evita erro Unexpected token '<' / <!DOCTYPE ...).
 <!-- ---------------------------------------------------------------------- -->
 
-<!-- MODELO DE DESCRIÇÃO -->
-## 📄 Descrição do entregável
+<!-- 🛠 Tecnologias -->
+### Front-end
 
-<!-- EXEMPLO DE DESCRIÇÃO DE UM PROJETO: -->
-- Widget (Pasta que armazena apenas o widget)
+React 18 + Vite
 
-- ExternalPage (Widget em uma página externa)
+React Router
+
+Tailwind CSS
+
+Lucide React
+
+Dados / Integração
+
+API HTTP (opcional)
+
+Firebase / Firestore (cadastro de usuário)
+
+Qualidade
+
+Acessibilidade e semântica básica
+
+UI consistente (gradientes, sombras, estados de erro/carregamento)
 
 ---
 
 <!-- ---------------------------------------------------------------------- -->
 
-<!-- MODELO DESCRIÇÃO SOBRE O PROJETO: -->
-## 💻 Sobre o projeto
+## 📁 Estrutura do projeto
+css
+Copiar código
+src/
+  componentes/
+    home/
+      HeroSection.jsx
+      DonationGallery.jsx
+    instituicoes/
+      ListaInstituicoes.jsx
+      FormDoacao.jsx
+    layout/
+      Header.jsx
+      Footer.jsx
+      Layout.jsx
+    ui/
+      Button.jsx
+      CampoSenha.jsx
+  pages/
+    Home.jsx
+    BuscarInstituicoes.jsx
+    DetalhesInstituicao.jsx
+    Doar.jsx
+    Login.jsx
+    Perfil.jsx
+    CadastroUsuario.jsx
+    CadastroInstituicao.jsx
+  lib/
+    api.js
+    firebaseConfig.js
+  assets/
+    fundo.png
+    LogoDoarCuidar.png
+main.jsx
+App.jsx
+🧭 Roteiro e status
+ Base (Vite + Tailwind + Router)
 
-<!-- EXPLICA O MOTIVO DO PROJETO -->
-{projeto-integrador-I-doacao-ongs} é um instrumento que proporciona relacionar teorias estudadas às práticas
-realizadas no mundo do trabalho. {Nome da Empresa}.
+ Header/Footer + tema visual
 
+ Home (hero + CTA + galeria)
 
-<!-- LINHA DE DIVISÃO: -->
----
+ Busca (query + UF) + cards
 
-<!-- ---------------------------------------------------------------------- -->
+ Fallback DEMO (content-type guard)
 
-<!-- MODELO FUNCIONALIDADES: -->
-## ⚙️ Funcionalidades
+ Cadastro usuário (Firestore) / Login local
 
-<!-- EXEMPLO DE FUNCIONALIDADES: -->
-- [x] Em edição
-- [x] Em edição
+ Detalhes / Doar
 
----
+ API real de instituições
 
-<!-- ---------------------------------------------------------------------- -->
+ Autenticação real (Firebase Auth)
 
-<!-- EXEMPLO DE LAYOUT: -->
-## 🎨 Layout
+ Testes unit/E2E
 
-### Widget
-
-<!-- AQUI VOCÊ PASSA O CAMINHO DA IMAGEM -->
-
-Em edição
-
----
-
-<!-- ---------------------------------------------------------------------- -->
-
-<!-- MODELO DE COMO EXECUTAR O PROJETO -->
-## 🚀 Como executar o projeto
-
-1 - Em edição  
-2 - Em edição
-3 - Em edição
-
-<!-- ---------------------------------------------------------------------- -->
-
-<!-- MODELO DE PRÉ REQUISITOS -->
-### Pré-requisitos
-
-Em edição
-
----
-
-<!-- ---------------------------------------------------------------------- -->
-
-<!-- MODELO DE TECNOLOGIAS -->
-## 🛠 Tecnologias
-
-As seguintes ferramentas foram usadas na construção do projeto:
-
-#### **Front-End**  
-
--   ****
--   ****
-
-#### **Prototipação** ([Figma]())
-
-- **[Minha Prototipação]()**
+ Deploy (Vercel/Netlify)
 
 ---
 
 <!-- ---------------------------------------------------------------------- -->
 
-<!-- MODELO DE COMO CONTRIBUIR PARA O PROJETO -->
----
+<!-- Observações
 
+Se a API retornar HTML (ex.: erro de proxy), a aplicação alterna para DEMO.
+
+Configure o proxy do Vite/servidor para retornar JSON nas rotas da API.
 <!-- ---------------------------------------------------------------------- -->
 
 <!-- MODELO DE AUTOR-->
@@ -112,7 +152,15 @@ As seguintes ferramentas foram usadas na construção do projeto:
 Alunos</a>
  <br />
  
-[![Gmail Badge]()]())
+Jose Edson Rodrigues
+
+Fábio
+
+Keven
+
+Lucca
+
+Viviane Oliveira Soares
 
 ---
 
@@ -120,5 +168,3 @@ Alunos</a>
 
 <!-- MODELO DE LICENÇA -->
 ## 📝 Licença
-
-Este projeto esta sobe a licença [MIT](./LICENSE).
