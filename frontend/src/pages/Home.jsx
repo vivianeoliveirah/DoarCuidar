@@ -1,4 +1,3 @@
-// src/pages/Home.jsx
 import { useNavigate } from "react-router-dom";
 import Layout from "@/componentes/layout/Layout";
 import HeroSection from "@/componentes/home/HeroSection";
@@ -8,22 +7,18 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <Layout className="py-6 md:py-10">
-      {/* Hero com a citação */}
+    <Layout className="py-6 md:py-8">
       <HeroSection />
 
-      {/* Galeria inspiracional */}
-      <section className="mt-10">
+      <section className="mt-8">
         <DonationGallery />
       </section>
 
-      {/* CTA central para a página de busca */}
-      <div className="mt-10 flex justify-center">
+      <div className="mt-8 flex justify-center pb-2">
         <button
           type="button"
           onClick={() => navigate("/buscar")}
-          className="rounded-xl bg-emerald-600 px-6 py-3 text-white text-sm font-medium shadow-sm
-                     hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          className="btn-brand btn-md"
         >
           Buscar instituições
         </button>

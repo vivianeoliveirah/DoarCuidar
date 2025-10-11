@@ -1,43 +1,31 @@
 import { useState } from "react";
-import Button from "@/componentes/ui/Button";
 
 export default function CampoSenha({
-  id = "senha",
-  value,
-  onChange,
-  placeholder = "Senha",
-  required = true,
-  className = "",
+  id, label = "Senha", value, onChange,
+  placeholder = "", required = true
 }) {
-  const [mostrar, setMostrar] = useState(false);
-
+  const [show, setShow] = useState(false);
   return (
     <div className="relative">
-      <label htmlFor={id} className="block text-sm font-medium mb-1">
-        {placeholder}
-      </label>
+      <label htmlFor={id} className="label">{label}</label>
       <input
         id={id}
-        type={mostrar ? "text" : "password"}
+        type={show ? "text" : "password"}
         value={value}
         onChange={onChange}
-        placeholder={placeholder}
         required={required}
-        aria-label={placeholder}
-        className={`w-full border px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-brand-600 pr-24 ${className}`}
+        placeholder={placeholder}
+        className="input pr-24"
       />
-      <Button
+      <button
         type="button"
-        variant="ghost"
-        size="sm"
-        onClick={() => setMostrar(!mostrar)}
-        className="absolute right-2 top-1.5"
-        aria-pressed={mostrar}
+        onClick={() => setShow(!show)}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-brand-700 text-sm"
         aria-controls={id}
-        aria-label={mostrar ? "Ocultar senha" : "Mostrar senha"}
+        aria-pressed={show}
       >
-        {mostrar ? "Ocultar" : "Mostrar"}
-      </Button>
+        {show ? "Ocultar" : "Mostrar"}
+      </button>
     </div>
   );
 }

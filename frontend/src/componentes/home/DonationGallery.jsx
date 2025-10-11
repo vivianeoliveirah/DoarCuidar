@@ -7,12 +7,12 @@ export default function DonationGallery({ items = 3 }) {
       texto: "Ajude iniciativas que combatem a fome.",
     },
     {
-      url: "https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?q=80&w=1600&auto=format&fit=crop",
+      url: "https://observatorio3setor.org.br/wp-content/uploads/2023/04/AdobeStock_528812603.png",
       titulo: "Educação",
       texto: "Apoie projetos de reforço escolar e tecnologia.",
     },
     {
-      url: "https://images.unsplash.com/photo-1493836512294-502baa1986e2?q=80&w=1600&auto=format&fit=crop",
+      url: "https://jrmcoaching.com.br/wp-content/uploads/2016/01/Dinamica-para-Terceira-Idade.jpg",
       titulo: "Idosos",
       texto: "Lar e cuidado para a melhor idade.",
     },
