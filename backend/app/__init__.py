@@ -1,38 +1,31 @@
+# backend/app/__init__.py
 import os
 from flask import Flask
-from flask_cors import CORS
-# Importa o db (cliente Firestore) e a função de inicialização do extensions.py
-# NOTA: O 'db' agora é a instância do Firestore, não mais do SQLAlchemy
-from app.extensions import init_firebase_admin 
-from app.routes import bp as api_bp
-
-# Importa a classe de configuração
 from app.config import Config
+from app.extensions import init_firebase_admin, init_extensions
+from app.routes import bp as api_bp
 
 
 def create_app(config_class=Config):
-    # 1. Cria a instância do Flask
+    """Cria e configura a aplicação Flask principal."""
     app = Flask(__name__, instance_relative_config=True)
-    
-    # 2. Carrega as configurações (SECRET_KEY do config.py ou ambiente)
     app.config.from_object(config_class)
 
-    # 3. Limpeza de caminhos de instância:
-    # Como não usaremos SQLite/Alembic, a criação da pasta 'instance' não é crítica, 
-    # mas pode ser mantida se houver outros arquivos de instância.
+    # Garante que a pasta instance exista
     os.makedirs(app.instance_path, exist_ok=True)
-    
-    # 4. Inicializa o Firebase Admin SDK (Chave de Serviço)
-    # Esta função irá inicializar o 'db' (cliente Firestore) no extensions.py
-    init_firebase_admin(app) 
 
-    # 5. Inicializa o CORS
-    CORS(app)
+    # Inicializa Firebase Admin
+    init_firebase_admin(app)
 
-    # 6. Registro de Modelos e Blueprints
-    # É bom manter o import do models para que as estruturas de dados 
-    # (agora funções/dicionários) estejam disponíveis.
-    from app import models 
+    # Inicializa CORS e outras extensões
+    init_extensions(app)
+
+    # Registra rotas (Blueprint principal)
     app.register_blueprint(api_bp)
+
+    # Endpoint simples para checagem de saúde
+    @app.route("/api/health")
+    def health():
+        return {"status": "ok", "message": "API DoarCuidar funcionando"}
 
     return app
