@@ -1,4 +1,6 @@
-const BASE = import.meta.env.VITE_API_URL ?? "";
+// frontend/src/lib/api.js
+
+const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:5000/api";
 
 async function request(path, opts = {}) {
   const res = await fetch(`${BASE}${path}`, {
@@ -10,11 +12,11 @@ async function request(path, opts = {}) {
 }
 
 export const api = {
-  saude: () => request("/api/health"),
+  saude: () => request("/health"),
   listarInstituicoes: (q = "", estado = "") =>
-    request(`/api/instituicoes?q=${encodeURIComponent(q)}&estado=${estado}`),
+    request(`/instituicoes?q=${encodeURIComponent(q)}&estado=${estado}`),
   registrarDoacao: (data) =>
-    request("/api/doacoes", {
+    request("/doacoes", {
       method: "POST",
       body: JSON.stringify(data),
     }),

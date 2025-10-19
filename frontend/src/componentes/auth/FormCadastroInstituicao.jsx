@@ -3,6 +3,7 @@ import { Building2, Mail, Phone, MapPin } from "lucide-react";
 import Button from "@/componentes/ui/Button";
 import { collection, addDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
+import { api } from "@/lib/api";
 
 function onlyDigits(s = "") {
   return s.replace(/\D/g, "");
@@ -41,15 +42,21 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
     if (telefoneLimpo.length < 10) return setErro("Telefone incompleto.");
 
     try {
+      // 🔹 Salva no Firebase
       await addDoc(collection(db, "instituicoes"), {
-        nome: form.nome,
+        ...form,
         cnpj: cnpjLimpo,
         uf: form.uf.toUpperCase(),
-        cidade: form.cidade,
         telefone: telefoneLimpo,
-        email: form.email,
-        endereco: form.endereco,
         criadoEm: new Date().toISOString(),
+      });
+
+      // 🔹 Envia também para o backend Flask
+      await api.cadastrarInstituicao({
+        ...form,
+        cnpj: cnpjLimpo,
+        telefone: telefoneLimpo,
+        uf: form.uf.toUpperCase(),
       });
 
       setSucesso("Instituição cadastrada com sucesso!");
