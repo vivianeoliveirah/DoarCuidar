@@ -1,6 +1,8 @@
+import os
+
+
 class Config:
-    SECRET_KEY = "troque-esta-chave-por-uma-bem-forte"
-    # usa arquivo instance/doarcuidar.db
-    SQLALCHEMY_DATABASE_URI = "sqlite:///doarcuidar.db"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # Use uma variável de ambiente para a chave secreta em produção
+    SECRET_KEY = os.environ.get("SECRET_KEY", "troque-esta-chave-por-uma-bem-forte") 
     JSON_AS_ASCII = False  # para acentos corretos no JSON
+    # Configuracoes SQL removidas

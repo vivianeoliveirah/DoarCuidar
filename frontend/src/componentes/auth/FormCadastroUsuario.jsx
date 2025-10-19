@@ -3,58 +3,73 @@ import { Link } from "react-router-dom";
 import { Mail, UserRound, Phone, MapPin } from "lucide-react";
 import Button from "@/componentes/ui/Button";
 import CampoSenha from "@/componentes/ui/CampoSenha";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
+
+function onlyDigits(s = "") {
+  return s.replace(/\D/g, "");
+}
 
 export default function FormCadastroUsuario({ showTitle = true }) {
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [senha, setSenha] = useState("");
-  const [confirma, setConfirma] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [endereco, setEndereco] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [uf, setUf] = useState("");
-  const [aceite, setAceite] = useState(false);
+  const [form, setForm] = useState({
+    nome: "", email: "", senha: "", confirma: "",
+    telefone: "", endereco: "", cidade: "", uf: "", aceite: false
+  });
+
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
+
+  const set = (k) => (e) =>
+    setForm((p) => ({
+      ...p,
+      [k]: e.target?.type === "checkbox" ? e.target.checked : e.target.value,
+    }));
 
   async function handleSubmit(e) {
     e.preventDefault();
     setErro("");
     setSucesso("");
 
+    const { nome, email, senha, confirma, telefone, endereco, cidade, uf, aceite } = form;
+
     if (!aceite) return setErro("É necessário aceitar os termos de uso.");
     if (senha.length < 6) return setErro("A senha deve ter no mínimo 6 caracteres.");
     if (senha !== confirma) return setErro("As senhas não coincidem.");
-
-    const dados = {
-      nome,
-      email,
-      senha,
-      telefone,
-      endereco,
-      cidade,
-      uf: uf.toUpperCase(),
-      aceite,
-    };
+    if (!email.includes("@")) return setErro("Email inválido.");
+    if (uf && uf.length !== 2) return setErro("UF deve ter 2 letras.");
 
     try {
-      await addDoc(collection(db, "usuarios"), dados);
-      setSucesso("Usuário cadastrado com sucesso!");
-      setNome(""); setEmail(""); setSenha(""); setConfirma("");
-      setTelefone(""); setEndereco(""); setCidade(""); setUf("");
-      setAceite(false);
+      const res = await fetch("/api/usuarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nome,
+          email,
+          senha,
+          confirma,
+          telefone: onlyDigits(telefone),
+          endereco,
+          cidade,
+          uf: uf.toUpperCase(),
+          aceite,
+        }),
+      });
+
+      const resultado = await res.json();
+      if (!res.ok) return setErro(resultado.erro || "Erro ao cadastrar.");
+
+      setSucesso(resultado.sucesso);
+      setForm({
+        nome: "", email: "", senha: "", confirma: "",
+        telefone: "", endereco: "", cidade: "", uf: "", aceite: false
+      });
     } catch (error) {
-      setErro("Erro ao cadastrar usuário.");
       console.error(error);
+      setErro("Erro de conexão com o servidor.");
     }
   }
 
   const label = "block text-sm font-medium mb-1 text-slate-700";
   const input =
-    "w-full rounded-xl border border-slate-300/70 bg-white px-3 py-2.5 shadow-sm " +
-    "focus:outline-none focus:ring-2 focus:ring-emerald-600";
+    "w-full rounded-xl border border-slate-300/70 bg-white px-3 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-600";
 
   return (
     <form
@@ -77,83 +92,71 @@ export default function FormCadastroUsuario({ showTitle = true }) {
       {sucesso && <p className="mt-4 mb-2 text-sm text-emerald-700">{sucesso}</p>}
 
       <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Nome */}
         <div>
           <label htmlFor="nome" className={label}>
             <span className="inline-flex items-center gap-2">
-              <UserRound className="w-4 h-4 text-emerald-700" aria-hidden />
+              <UserRound className="w-4 h-4 text-emerald-700" />
               Nome completo
             </span>
           </label>
-          <input id="nome" type="text" value={nome} onChange={(e) => setNome(e.target.value)} className={input} required />
+          <input id="nome" value={form.nome} onChange={set("nome")} className={input} required />
         </div>
 
-        {/* E-mail */}
         <div>
           <label htmlFor="email" className={label}>
             <span className="inline-flex items-center gap-2">
-              <Mail className="w-4 h-4 text-emerald-700" aria-hidden />
+              <Mail className="w-4 h-4 text-emerald-700" />
               E-mail
             </span>
           </label>
-          <input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={input} required />
+          <input id="email" type="email" value={form.email} onChange={set("email")} className={input} required />
         </div>
 
-        {/* Senha */}
         <div>
-          <label htmlFor="senha" className={label}>
-            Senha <span className="text-slate-400">(mín. 6)</span>
-          </label>
-          <CampoSenha id="senha" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Sua senha" />
+          <label htmlFor="senha" className={label}>Senha <span className="text-slate-400">(mín. 6)</span></label>
+          <CampoSenha id="senha" value={form.senha} onChange={set("senha")} placeholder="Sua senha" />
         </div>
 
-        {/* Confirmar senha */}
         <div>
           <label htmlFor="confirma" className={label}>Confirmar senha</label>
-          <CampoSenha id="confirma" value={confirma} onChange={(e) => setConfirma(e.target.value)} placeholder="Repita a senha" />
+          <CampoSenha id="confirma" value={form.confirma} onChange={set("confirma")} placeholder="Repita a senha" />
         </div>
 
-        {/* Telefone */}
         <div>
           <label htmlFor="telefone" className={label}>
             <span className="inline-flex items-center gap-2">
-              <Phone className="w-4 h-4 text-emerald-700" aria-hidden />
+              <Phone className="w-4 h-4 text-emerald-700" />
               Telefone (opcional)
             </span>
           </label>
-          <input id="telefone" type="tel" value={telefone} onChange={(e) => setTelefone(e.target.value)} className={input} placeholder="(00) 00000-0000" />
+          <input id="telefone" value={form.telefone} onChange={set("telefone")} className={input} placeholder="(00) 00000-0000" />
         </div>
 
-        {/* Endereço */}
         <div className="md:col-span-2">
           <label htmlFor="endereco" className={label}>Endereço (opcional)</label>
-          <input id="endereco" type="text" value={endereco} onChange={(e) => setEndereco(e.target.value)} className={input} placeholder="Rua, número, complemento" />
+          <input id="endereco" value={form.endereco} onChange={set("endereco")} className={input} />
         </div>
 
-        {/* Cidade */}
         <div>
           <label htmlFor="cidade" className={label}>
             <span className="inline-flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-emerald-700" aria-hidden />
+              <MapPin className="w-4 h-4 text-emerald-700" />
               Cidade (opcional)
             </span>
           </label>
-          <input id="cidade" type="text" value={cidade} onChange={(e) => setCidade(e.target.value)} className={input} />
+          <input id="cidade" value={form.cidade} onChange={set("cidade")} className={input} />
         </div>
 
-        {/* UF */}
         <div>
           <label htmlFor="uf" className={label}>UF (opcional)</label>
-          <input id="uf" type="text" value={uf} onChange={(e) => setUf(e.target.value.toUpperCase())} maxLength={2} className={`${input} text-center`} placeholder="SP" />
+          <input id="uf" value={form.uf} onChange={set("uf")} maxLength={2} className={`${input} text-center`} placeholder="SP" />
         </div>
       </div>
 
-      {/* Termos */}
       <div className="mt-5 flex items-start gap-2">
-        <input id="aceite" type="checkbox" checked={aceite} onChange={(e) => setAceite(e.target.checked)} className="mt-1 h-4 w-4 rounded border-slate-300" required />
+        <input id="aceite" type="checkbox" checked={form.aceite} onChange={set("aceite")} className="mt-1 h-4 w-4 rounded border-slate-300" required />
         <label htmlFor="aceite" className="text-sm">
-          Li e concordo com os{" "}
-          <Link to="#" className="text-emerald-700 underline">termos de uso</Link>.
+          Li e concordo com os <Link to="#" className="text-emerald-700 underline">termos de uso</Link>.
         </label>
       </div>
 
@@ -162,8 +165,7 @@ export default function FormCadastroUsuario({ showTitle = true }) {
           Criar conta
         </Button>
         <p className="text-sm text-center">
-          Já tem conta?{" "}
-          <Link to="/login" className="text-emerald-700 hover:underline">Entrar</Link>
+          Já tem conta? <Link to="/login" className="text-emerald-700 hover:underline">Entrar</Link>
         </p>
       </div>
     </form>

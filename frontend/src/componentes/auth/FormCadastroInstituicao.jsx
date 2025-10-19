@@ -9,51 +9,68 @@ function onlyDigits(s = "") {
 }
 
 export default function FormCadastroInstituicao({ showTitle = true }) {
-  const [nome, setNome] = useState("");
-  const [cnpj, setCnpj] = useState("");
-  const [uf, setUf] = useState("");
-  const [cidade, setCidade] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [email, setEmail] = useState("");
-  const [endereco, setEndereco] = useState("");
+  const [form, setForm] = useState({
+    nome: "",
+    cnpj: "",
+    uf: "",
+    cidade: "",
+    telefone: "",
+    email: "",
+    endereco: "",
+  });
 
   const [erro, setErro] = useState("");
   const [sucesso, setSucesso] = useState("");
+
+  function handleChange(e) {
+    const { id, value } = e.target;
+    setForm((prev) => ({ ...prev, [id]: value }));
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setErro("");
     setSucesso("");
 
-    const cnpjLimpo = onlyDigits(cnpj);
+    const cnpjLimpo = onlyDigits(form.cnpj);
+    const telefoneLimpo = onlyDigits(form.telefone);
+
     if (cnpjLimpo.length !== 14) return setErro("Informe um CNPJ válido (14 dígitos).");
-    if (uf && uf.length !== 2) return setErro("UF deve ter 2 letras.");
+    if (form.uf && form.uf.length !== 2) return setErro("UF deve ter 2 letras.");
+    if (!form.email.includes("@")) return setErro("Email inválido.");
+    if (telefoneLimpo.length < 10) return setErro("Telefone incompleto.");
 
     try {
       await addDoc(collection(db, "instituicoes"), {
-        nome,
+        nome: form.nome,
         cnpj: cnpjLimpo,
-        uf: uf.toUpperCase(),
-        cidade,
-        telefone,
-        email,
-        endereco,
+        uf: form.uf.toUpperCase(),
+        cidade: form.cidade,
+        telefone: telefoneLimpo,
+        email: form.email,
+        endereco: form.endereco,
         criadoEm: new Date().toISOString(),
       });
 
       setSucesso("Instituição cadastrada com sucesso!");
-      setNome(""); setCnpj(""); setUf(""); setCidade("");
-      setTelefone(""); setEmail(""); setEndereco("");
+      setForm({
+        nome: "",
+        cnpj: "",
+        uf: "",
+        cidade: "",
+        telefone: "",
+        email: "",
+        endereco: "",
+      });
     } catch (err) {
       console.error(err);
-      setErro("Erro ao cadastrar instituição.");
+      setErro("Erro ao cadastrar instituição: " + err.message);
     }
   }
 
   const label = "block text-sm font-medium mb-1";
   const input =
-    "w-full rounded-xl border border-slate-300 px-3 py-2 shadow-sm " +
-    "focus:outline-none focus:ring-2 focus:ring-emerald-600";
+    "w-full rounded-xl border border-slate-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-600";
 
   return (
     <form
@@ -68,7 +85,6 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
       {sucesso && <p className="mb-4 text-sm text-emerald-700">{sucesso}</p>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Nome */}
         <div className="md:col-span-2">
           <label htmlFor="nome" className={label}>
             <span className="inline-flex items-center gap-2">
@@ -76,36 +92,19 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
               Nome da instituição
             </span>
           </label>
-          <input id="nome" value={nome} onChange={(e)=>setNome(e.target.value)} className={input} required />
+          <input id="nome" value={form.nome} onChange={handleChange} className={input} required />
         </div>
 
-        {/* CNPJ */}
         <div>
           <label htmlFor="cnpj" className={label}>CNPJ</label>
-          <input
-            id="cnpj"
-            value={cnpj}
-            onChange={(e)=>setCnpj(e.target.value)}
-            className={input}
-            placeholder="00.000.000/0001-00"
-            required
-          />
+          <input id="cnpj" value={form.cnpj} onChange={handleChange} className={input} required />
         </div>
 
-        {/* UF */}
         <div>
           <label htmlFor="uf" className={label}>Estado (UF)</label>
-          <input
-            id="uf"
-            value={uf}
-            onChange={(e)=>setUf(e.target.value.toUpperCase())}
-            maxLength={2}
-            className={`${input} text-center`}
-            placeholder="SP"
-          />
+          <input id="uf" value={form.uf} onChange={handleChange} maxLength={2} className={`${input} text-center`} />
         </div>
 
-        {/* Cidade */}
         <div>
           <label htmlFor="cidade" className={label}>
             <span className="inline-flex items-center gap-2">
@@ -113,10 +112,9 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
               Cidade
             </span>
           </label>
-          <input id="cidade" value={cidade} onChange={(e)=>setCidade(e.target.value)} className={input} />
+          <input id="cidade" value={form.cidade} onChange={handleChange} className={input} />
         </div>
 
-        {/* Telefone */}
         <div>
           <label htmlFor="telefone" className={label}>
             <span className="inline-flex items-center gap-2">
@@ -124,10 +122,9 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
               Telefone
             </span>
           </label>
-          <input id="telefone" value={telefone} onChange={(e)=>setTelefone(e.target.value)} className={input} />
+          <input id="telefone" value={form.telefone} onChange={handleChange} className={input} />
         </div>
 
-        {/* Email */}
         <div className="md:col-span-2">
           <label htmlFor="email" className={label}>
             <span className="inline-flex items-center gap-2">
@@ -135,13 +132,12 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
               Email
             </span>
           </label>
-          <input id="email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} className={input} />
+          <input id="email" type="email" value={form.email} onChange={handleChange} className={input} />
         </div>
 
-        {/* Endereço */}
         <div className="md:col-span-2">
           <label htmlFor="endereco" className={label}>Endereço completo</label>
-          <input id="endereco" value={endereco} onChange={(e)=>setEndereco(e.target.value)} className={input} />
+          <input id="endereco" value={form.endereco} onChange={handleChange} className={input} />
         </div>
       </div>
 
