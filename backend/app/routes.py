@@ -1,114 +1,130 @@
+# backend/app/routes.py
 from flask import Blueprint, request, jsonify
-from app.extensions import db
-from app.models import document_to_dict, default_donatario_data
-from app.consulta_empresas import brasilapi_get_cnpj, map_brasilapi_to_item, is_cnpj
-from flask_cors import cross_origin
+from firebase_admin import firestore
 
-bp = Blueprint("api", __name__, url_prefix="/api")
+bp = Blueprint("api", __name__)
 
+def document_to_dict(doc):
+    d = doc.to_dict()
+    d["id"] = doc.id
+    return d
 
-# ======================================================
-# 🔍 Health check
-# ======================================================
-@bp.get("/health")
-@cross_origin()
+@bp.route("/health")
 def health_check():
-    return {"status": "ok", "message": "API DoarCuidar está funcionando!"}, 200
+    """Verifica se o backend está ativo."""
+    return jsonify({"status": "ok"}), 200
 
+@bp.post("/usuarios")
+def cadastrar_usuario():
+    from app import db  
+    if db is None:
+        return jsonify({"erro": "Banco de dados não inicializado"}), 500
 
-# ======================================================
-# 🧭 Listar instituições (Firestore)
-# ======================================================
+    data = request.get_json() or {}
+    obrigatorios = ["nome", "email", "senha"]
+
+    if not all(k in data and data[k] for k in obrigatorios):
+        return jsonify({"erro": "Campos obrigatórios ausentes."}), 400
+
+    try:
+        doc_ref = db.collection("usuarios").add({
+            "nome": data["nome"],
+            "email": data["email"],
+            "senha": data["senha"],  
+            "telefone": data.get("telefone", ""),
+            "endereco": data.get("endereco", ""),
+            "cidade": data.get("cidade", ""),
+            "uf": data.get("uf", ""),
+            "aceite": data.get("aceite", False),
+            "criadoEm": firestore.SERVER_TIMESTAMP,
+        })
+        return jsonify({
+            "id": doc_ref[1].id,
+            "mensagem": "Usuário criado com sucesso!"
+        }), 201
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao salvar usuário: {e}"}), 500
+
 @bp.get("/instituicoes")
-@cross_origin()
 def buscar_instituicoes():
-    """Lista instituições com filtros opcionais de nome e UF."""
+    """Busca instituições por nome, estado (UF) ou lista todas."""
+    from app import db
     if db is None:
         return jsonify({"erro": "Banco de dados não inicializado"}), 500
 
     q = (request.args.get("q") or "").strip()
     uf = (request.args.get("estado") or "").strip().upper()
 
-    # Caso o usuário insira um CNPJ diretamente
-    if is_cnpj(q):
-        try:
-            empresa = brasilapi_get_cnpj(q)
-            item = map_brasilapi_to_item(empresa)
-            return jsonify([item]), 200
-        except Exception as e:
-            return jsonify({"erro": f"Erro ao buscar CNPJ: {e}"}), 500
-
-    # Busca normal no Firestore
     try:
         instituicoes_ref = db.collection("donatarios")
         query = instituicoes_ref
 
         if uf:
-            query = query.where("estado", "==", uf)
+            query = query.where("uf", "==", uf)
 
         results = query.stream()
-        donatarios = [document_to_dict(doc) for doc in results]
-
+        instituicoes = [document_to_dict(doc) for doc in results]
+        
         if q:
-            donatarios = [d for d in donatarios if q.lower() in d.get("nome", "").lower()]
+            instituicoes = [
+                i for i in instituicoes if q.lower() in i.get("nome", "").lower()
+            ]
 
-        return jsonify(donatarios), 200
-
+        return jsonify(instituicoes), 200
     except Exception as e:
         return jsonify({"erro": f"Erro ao consultar instituições: {e}"}), 500
 
-
-# ======================================================
-# 🧾 Detalhar instituição
-# ======================================================
-@bp.get("/instituicoes/<inst_id>")
-@cross_origin()
-def detalhes_instituicao(inst_id):
-    if db is None:
-        return jsonify({"erro": "Banco de dados não inicializado"}), 500
-
-    try:
-        inst_ref = db.collection("donatarios").document(inst_id)
-        inst_doc = inst_ref.get()
-
-        if not inst_doc.exists:
-            return jsonify({"erro": "Instituição não encontrada"}), 404
-
-        inst = document_to_dict(inst_doc)
-        inst["id"] = inst_doc.id
-
-        return jsonify(inst), 200
-
-    except Exception as e:
-        return jsonify({"erro": f"Erro ao buscar detalhes: {e}"}), 500
-
-
-# ======================================================
-# 🏛️ Cadastrar instituição
-# ======================================================
 @bp.post("/instituicoes")
-@cross_origin()
 def cadastrar_instituicao():
-    """Cadastra uma nova instituição (donatário)."""
+    """Cadastra uma nova instituição beneficente."""
+    from app import db
     if db is None:
         return jsonify({"erro": "Banco de dados não inicializado"}), 500
 
-    data = request.get_json(silent=True)
-    if not data:
-        return jsonify({"erro": "Corpo da requisição vazio ou inválido"}), 400
+    data = request.get_json() or {}
+    obrigatorios = ["nome", "cnpj"]
 
-    nome = data.get("nome")
-    cnpj = data.get("cnpj")
-
-    if not nome or not cnpj:
-        return jsonify({"erro": "Campos obrigatórios ausentes (nome e cnpj)"}), 400
+    if not all(k in data and data[k] for k in obrigatorios):
+        return jsonify({"erro": "Campos obrigatórios ausentes."}), 400
 
     try:
-        nova_data = default_donatario_data(data)
-        _, nova_ref = db.collection("donatarios").add(nova_data)
-
-        nova = {**nova_data, "id": nova_ref.id}
-        return jsonify(nova), 201
-
+        doc_ref = db.collection("donatarios").add({
+            "nome": data["nome"],
+            "cnpj": data["cnpj"],
+            "uf": data.get("uf", ""),
+            "cidade": data.get("cidade", ""),
+            "telefone": data.get("telefone", ""),
+            "email": data.get("email", ""),
+            "endereco": data.get("endereco", ""),
+            "criadoEm": firestore.SERVER_TIMESTAMP,
+        })
+        return jsonify({
+            "id": doc_ref[1].id,
+            "mensagem": "Instituição cadastrada com sucesso!"
+        }), 201
     except Exception as e:
-        return jsonify({"erro": f"Erro ao cadastrar: {e}"}), 500
+        return jsonify({"erro": f"Erro ao cadastrar instituição: {e}"}), 500
+
+@bp.post("/doacoes")
+def registrar_doacao():
+    """Registra uma doação feita a uma instituição."""
+    from app import db
+    if db is None:
+        return jsonify({"erro": "Banco de dados não inicializado"}), 500
+
+    data = request.get_json() or {}
+
+    try:
+        doc_ref = db.collection("doacoes").add({
+            "donatario_id": data.get("donatario_id"),
+            "nome_doador": data.get("nome_doador"),
+            "valor": data.get("valor"),
+            "mensagem": data.get("mensagem", ""),
+            "criadoEm": firestore.SERVER_TIMESTAMP,
+        })
+        return jsonify({
+            "id": doc_ref[1].id,
+            "mensagem": "Doação registrada!"
+        }), 201
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao registrar doação: {e}"}), 500

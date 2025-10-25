@@ -2,7 +2,7 @@ import { ShieldCheck, Users, Quote } from "lucide-react";
 
 export default function HeroSection() {
   return (
-    <section className="full-bleed relative overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-sky-50">
+    <section className="full-bleed relative flex flex-col justify-center flex-grow overflow-hidden bg-gradient-to-br from-emerald-50 via-white to-sky-50">
       {/* halos decorativos */}
       <div
         aria-hidden
@@ -14,7 +14,7 @@ export default function HeroSection() {
       />
 
       {/* conteúdo */}
-      <div className="container-p py-8 md:py-12">
+      <div className="container-p py-6 md:py-8 flex-grow flex items-center">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">
             Encontre uma instituição{" "}

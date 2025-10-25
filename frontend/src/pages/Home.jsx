@@ -7,22 +7,21 @@ export default function Home() {
   const navigate = useNavigate();
 
   return (
-    <Layout className="py-6 md:py-8">
-      <HeroSection />
+    <Layout className="flex flex-col justify-between">
+  <div className="flex flex-col flex-grow overflow-hidden">
+    <HeroSection />
+    <DonationGallery />
+  </div>
 
-      <section className="mt-8">
-        <DonationGallery />
-      </section>
-
-      <div className="mt-8 flex justify-center pb-2">
-        <button
-          type="button"
-          onClick={() => navigate("/buscar")}
-          className="btn-brand btn-md"
-        >
-          Buscar instituições
-        </button>
-      </div>
-    </Layout>
+  <div className="flex justify-center pb-4">
+    <button
+      type="button"
+      onClick={() => navigate("/buscar")}
+      className="btn-brand btn-md"
+    >
+      Buscar instituições
+    </button>
+  </div>
+</Layout>
   );
 }

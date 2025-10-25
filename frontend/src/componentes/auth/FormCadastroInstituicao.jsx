@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Building2, Mail, Phone, MapPin } from "lucide-react";
 import Button from "@/componentes/ui/Button";
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
 import { api } from "@/lib/api";
 
 function onlyDigits(s = "") {
@@ -36,30 +34,30 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
     const cnpjLimpo = onlyDigits(form.cnpj);
     const telefoneLimpo = onlyDigits(form.telefone);
 
-    if (cnpjLimpo.length !== 14) return setErro("Informe um CNPJ válido (14 dígitos).");
-    if (form.uf && form.uf.length !== 2) return setErro("UF deve ter 2 letras.");
-    if (!form.email.includes("@")) return setErro("Email inválido.");
-    if (telefoneLimpo.length < 10) return setErro("Telefone incompleto.");
+    if (cnpjLimpo.length !== 14)
+      return setErro("Informe um CNPJ válido (14 dígitos).");
+    if (form.uf && form.uf.length !== 2)
+      return setErro("UF deve ter 2 letras.");
+    if (!form.email.includes("@"))
+      return setErro("Email inválido.");
+    if (telefoneLimpo.length < 10)
+      return setErro("Telefone incompleto.");
 
     try {
-      // 🔹 Salva no Firebase
-      await addDoc(collection(db, "instituicoes"), {
-        ...form,
-        cnpj: cnpjLimpo,
-        uf: form.uf.toUpperCase(),
-        telefone: telefoneLimpo,
-        criadoEm: new Date().toISOString(),
+      // 🔹 Envia SOMENTE para o backend Flask
+      const res = await api.request("/instituicoes", {
+        method: "POST",
+        body: JSON.stringify({
+          ...form,
+          cnpj: cnpjLimpo,
+          telefone: telefoneLimpo,
+          uf: form.uf.toUpperCase(),
+        }),
       });
 
-      // 🔹 Envia também para o backend Flask
-      await api.cadastrarInstituicao({
-        ...form,
-        cnpj: cnpjLimpo,
-        telefone: telefoneLimpo,
-        uf: form.uf.toUpperCase(),
-      });
-
+      console.log("📦 Resposta do backend:", res);
       setSucesso("Instituição cadastrada com sucesso!");
+
       setForm({
         nome: "",
         cnpj: "",
@@ -85,7 +83,9 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
       className="w-full max-w-2xl bg-white/90 p-6 md:p-8 rounded-3xl shadow-card ring-1 ring-slate-200"
     >
       {showTitle && (
-        <h1 className="text-2xl font-bold mb-6 text-center">Cadastrar Instituição</h1>
+        <h1 className="text-2xl font-bold mb-6 text-center">
+          Cadastrar Instituição
+        </h1>
       )}
 
       {erro && <p role="alert" className="mb-4 text-sm text-rose-700">{erro}</p>}
