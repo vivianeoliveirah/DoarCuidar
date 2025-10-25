@@ -1,31 +1,27 @@
-# backend/app/__init__.py
-import os
-from flask import Flask
-from app.config import Config
-from app.extensions import init_firebase_admin, init_extensions
+from flask import Flask, jsonify
 from app.routes import bp as api_bp
+from app.extensions import init_firebase_admin, init_extensions
 
+db = None
 
-def create_app(config_class=Config):
-    """Cria e configura a aplicação Flask principal."""
-    app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(config_class)
+def create_app():
+    global db
+    app = Flask(__name__)
 
-    # Garante que a pasta instance exista
-    os.makedirs(app.instance_path, exist_ok=True)
-
-    # Inicializa Firebase Admin
+    # 🔹 Inicializa CORS e Firebase
+    init_extensions(app)
     init_firebase_admin(app)
 
-    # Inicializa CORS e outras extensões
-    init_extensions(app)
+    # 🔹 Atualiza referência global ao Firestore
+    from app.extensions import db as firestore_db
+    db = firestore_db
 
-    # Registra rotas (Blueprint principal)
-    app.register_blueprint(api_bp)
+    # 🔹 Registra as rotas principais
+    app.register_blueprint(api_bp, url_prefix="/api")
 
-    # Endpoint simples para checagem de saúde
+    # 🔹 Endpoint de verificação
     @app.route("/api/health")
     def health():
-        return {"status": "ok", "message": "API DoarCuidar funcionando"}
+        return jsonify({"message": "API DoarCuidar está funcionando!", "status": "ok"})
 
     return app
