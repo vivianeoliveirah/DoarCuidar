@@ -14,6 +14,7 @@ def document_to_dict(doc):
 def health_check():
     return jsonify({"status": "ok"}), 200
 
+
 @bp.post("/usuarios")
 def cadastrar_usuario():
     from app import db
@@ -41,6 +42,37 @@ def cadastrar_usuario():
         return jsonify({"id": doc_ref[1].id, "mensagem": "Usuário criado com sucesso!"}), 201
     except Exception as e:
         return jsonify({"erro": f"Erro ao salvar usuário: {e}"}), 500
+
+
+@bp.post("/login")
+def login_usuario():
+    from app import db
+    if db is None:
+        return jsonify({"erro": "Banco de dados não inicializado"}), 500
+
+    data = request.get_json() or {}
+    email = data.get("email", "").strip()
+    senha = data.get("senha", "").strip()
+
+    if not email or not senha:
+        return jsonify({"erro": "Email e senha são obrigatórios."}), 400
+
+    try:
+        usuarios = db.collection("usuarios").where("email", "==", email).stream()
+        for u in usuarios:
+            user_data = u.to_dict()
+            if user_data.get("senha") == senha:
+                return jsonify({
+                    "id": u.id,
+                    "nome": user_data.get("nome"),
+                    "email": user_data.get("email"),
+                    "mensagem": "Login realizado com sucesso!"
+                }), 200
+
+        return jsonify({"erro": "Credenciais inválidas."}), 401
+
+    except Exception as e:
+        return jsonify({"erro": f"Erro ao autenticar: {e}"}), 500
 
 
 @bp.get("/instituicoes")
@@ -118,6 +150,7 @@ def excluir_instituicao(id):
         return jsonify({"mensagem": "Instituição excluída com sucesso!"}), 200
     except Exception as e:
         return jsonify({"erro": f"Erro ao excluir instituição: {e}"}), 500
+
 
 @bp.post("/doacoes")
 def registrar_doacao():
