@@ -30,3 +30,5 @@ serviceAccountKey.json
 firebase-key.json
 
 *.local
+frontend/node_modules/
+frontend/dist/
