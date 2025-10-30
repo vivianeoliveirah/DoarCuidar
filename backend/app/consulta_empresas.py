@@ -1,16 +1,13 @@
-# backend/app/consulta_empresas.py
 import re
 import requests
 
-# --- 🔹 Validação de CNPJ
-def is_cnpj(value: str) -> bool:
-    """Retorna True se for um CNPJ válido (apenas números, 14 dígitos)."""
+def is_cnpj(value: str) -> bool:    
     cnpj = re.sub(r"\D", "", value or "")
-    return len(cnpj) == 14 and cnpj.isdigit()
+    if len(cnpj) != 14 or not cnpj.isdigit():
+        return False
+    return True
 
-# --- 🔹 Consulta CNPJ na BrasilAPI
-def brasilapi_get_cnpj(cnpj: str) -> dict | None:
-    """Busca dados do CNPJ na BrasilAPI."""
+def brasilapi_get_cnpj(cnpj: str) -> dict | None:    
     cnpj_limpo = re.sub(r"\D", "", cnpj)
     url = f"https://brasilapi.com.br/api/cnpj/v1/{cnpj_limpo}"
 
@@ -25,9 +22,7 @@ def brasilapi_get_cnpj(cnpj: str) -> dict | None:
         print(f"[BrasilAPI] Erro na requisição: {e}")
         return None
 
-# --- 🔹 Conversão para o formato do app
-def map_brasilapi_to_item(data: dict) -> dict:
-    """Converte o JSON da BrasilAPI para o formato usado no DoarCuidar."""
+def map_brasilapi_to_item(data: dict) -> dict:    
     if not data:
         return {}
 
@@ -43,9 +38,7 @@ def map_brasilapi_to_item(data: dict) -> dict:
         "fonte": "BrasilAPI",
     }
 
-# --- 🔹 Lista de UFs válidas (para dropdowns e filtros)
-def listar_ufs() -> list[str]:
-    """Retorna a lista de UFs brasileiras."""
+def listar_ufs() -> list[str]:    
     return [
         "AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT",
         "MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO",
