@@ -1,7 +1,12 @@
 // frontend/src/lib/api.js
+<<<<<<< HEAD
 const BASE =
   import.meta.env.VITE_API_BASE_URL ??
   "http://127.0.0.1:5000/api";
+=======
+
+const BASE = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:5000/api";
+>>>>>>> c92aca2 (ajustes)
 
 async function request(path, opts = {}) {
   const url = `${BASE}${path}`;
@@ -30,6 +35,7 @@ async function request(path, opts = {}) {
 }
 
 export const api = {
+<<<<<<< HEAD
  
   saude: () => request("/health"),
 
@@ -52,6 +58,13 @@ export const api = {
   
   criarUsuario: (data) =>
     request("/usuarios", {
+=======
+  saude: () => request("/health"),
+  listarInstituicoes: (q = "", estado = "") =>
+    request(`/instituicoes?q=${encodeURIComponent(q)}&estado=${estado}`),
+  registrarDoacao: (data) =>
+    request("/doacoes", {
+>>>>>>> c92aca2 (ajustes)
       method: "POST",
       body: JSON.stringify(data),
     }),

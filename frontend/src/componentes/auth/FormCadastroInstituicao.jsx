@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Building2, Mail, Phone, MapPin } from "lucide-react";
 import Button from "@/componentes/ui/Button";
-import { api } from "@/lib/api";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "@/lib/firebaseConfig";
 
 function onlyDigits(s = "") {
   return s.replace(/\D/g, "");
@@ -44,15 +45,23 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
       return setErro("Telefone incompleto.");
 
     try {
-      // 🔹 Envia SOMENTE para o backend Flask
-      const res = await api.request("/instituicoes", {
-        method: "POST",
-        body: JSON.stringify({
-          ...form,
-          cnpj: cnpjLimpo,
-          telefone: telefoneLimpo,
-          uf: form.uf.toUpperCase(),
-        }),
+      await addDoc(collection(db, "instituicoes"), {
+        nome: form.nome,
+        cnpj: cnpjLimpo,
+        uf: form.uf.toUpperCase(),
+        cidade: form.cidade,
+        telefone: telefoneLimpo,
+        email: form.email,
+        endereco: form.endereco,
+        criadoEm: new Date().toISOString(),
+      });
+
+      // 🔹 Envia também para o backend Flask
+      await api.cadastrarInstituicao({
+        ...form,
+        cnpj: cnpjLimpo,
+        telefone: telefoneLimpo,
+        uf: form.uf.toUpperCase(),
       });
 
       console.log("📦 Resposta do backend:", res);
