@@ -1,0 +1,4 @@
+backend/app/serviceAccountKey.json
+backend/instance/*.db
+backend/migrations_legacy/
+.venv/
