@@ -1,2 +1,13 @@
 backend/instance/*.db
 backend/instance/*.sqlite
+serviceAccountKey.json
+
+.venv/
+__pycache__/
+
+
+.env
+*.db
+instance/
+migrations/
+serviceAccountKey.json
