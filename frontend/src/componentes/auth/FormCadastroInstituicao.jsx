@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { Building2, Mail, Phone, MapPin } from "lucide-react";
 import Button from "@/componentes/ui/Button";
-<<<<<<< HEAD
-import { collection, addDoc } from "firebase/firestore";
-import { db } from "@/lib/firebaseConfig";
-=======
-import { api } from "@/lib/api";
->>>>>>> 328caec (Implementações)
+import { api } from "@/lib/api"; // ✅ Mantém apenas essa importação
 
 function onlyDigits(s = "") {
   return s.replace(/\D/g, "");
@@ -49,40 +44,14 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
       return setErro("Telefone incompleto.");
 
     try {
-<<<<<<< HEAD
-      await addDoc(collection(db, "instituicoes"), {
-        nome: form.nome,
-        cnpj: cnpjLimpo,
-        uf: form.uf.toUpperCase(),
-        cidade: form.cidade,
-        telefone: telefoneLimpo,
-        email: form.email,
-        endereco: form.endereco,
-        criadoEm: new Date().toISOString(),
-      });
-
-      // 🔹 Envia também para o backend Flask
       await api.cadastrarInstituicao({
         ...form,
         cnpj: cnpjLimpo,
         telefone: telefoneLimpo,
         uf: form.uf.toUpperCase(),
-=======
-      // 🔹 Envia SOMENTE para o backend Flask
-      const res = await api.request("/instituicoes", {
-        method: "POST",
-        body: JSON.stringify({
-          ...form,
-          cnpj: cnpjLimpo,
-          telefone: telefoneLimpo,
-          uf: form.uf.toUpperCase(),
-        }),
->>>>>>> 328caec (Implementações)
       });
 
-      console.log("📦 Resposta do backend:", res);
       setSucesso("Instituição cadastrada com sucesso!");
-
       setForm({
         nome: "",
         cnpj: "",
