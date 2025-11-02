@@ -6,7 +6,6 @@ from firebase_admin import credentials, firestore, initialize_app
 from flask import Flask, jsonify
 from flask_cors import CORS
 
-# Carrega variáveis do .env (para ambiente local)
 load_dotenv()
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -16,15 +15,13 @@ CORS(app)
 
 db = None
 
-# --- Cores para logs no terminal ---
 class LogColor:
     GREEN = "\033[92m"
     YELLOW = "\033[93m"
     RESET = "\033[0m"
 
 
-def init_firebase():
-    """Inicializa o Firebase de forma compatível com local e Render."""
+def init_firebase():    
     global db
     try:
         firebase_json = (
@@ -34,11 +31,10 @@ def init_firebase():
 
         if not firebase_json:
             raise ValueError("Variável de ambiente com credenciais Firebase não encontrada.")
-
-        # Se vier um JSON direto
+        
         if firebase_json.strip().startswith("{"):
             cred_dict = json.loads(firebase_json)
-            # Corrige as quebras de linha na chave privada
+            
             if "private_key" in cred_dict:
                 cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
 
@@ -46,7 +42,7 @@ def init_firebase():
             initialize_app(cred)
             print(f"{LogColor.GREEN}✅ Firebase inicializado via variável de ambiente JSON.{LogColor.RESET}")
 
-        # Se vier um caminho de arquivo
+        
         elif os.path.exists(firebase_json):
             cred = credentials.Certificate(firebase_json)
             initialize_app(cred)
@@ -63,7 +59,6 @@ def init_firebase():
         db = None
 
 
-# Inicializa o Firebase
 init_firebase()
 
 

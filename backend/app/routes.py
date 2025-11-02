@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from firebase_admin import firestore
+from backend.main import get_db
 from app.consulta_empresas import is_cnpj
 
 bp = Blueprint("api", __name__)
@@ -9,18 +10,18 @@ def document_to_dict(doc):
     d["id"] = doc.id
     return d
 
-
 @bp.route("/health")
 def health_check():
-    return jsonify({"status": "ok"}), 200
-
+    db = get_db()
+    return jsonify({
+        "status": "ok",
+        "mensagem": "API DoarCuidar funcionando!",
+        "firebase": "conectado" if db else "falhou"
+    }), 200
 
 @bp.post("/usuarios")
 def cadastrar_usuario():
-    from app import db
-    if db is None:
-        return jsonify({"erro": "Banco de dados não inicializado"}), 500
-
+    db = get_db()
     data = request.get_json() or {}
     obrigatorios = ["nome", "email", "senha"]
 
@@ -39,17 +40,17 @@ def cadastrar_usuario():
             "aceite": data.get("aceite", False),
             "criadoEm": firestore.SERVER_TIMESTAMP,
         })
-        return jsonify({"id": doc_ref[1].id, "mensagem": "Usuário criado com sucesso!"}), 201
+        return jsonify({
+            "id": doc_ref[1].id,
+            "mensagem": "Usuário criado com sucesso!"
+        }), 201
     except Exception as e:
         return jsonify({"erro": f"Erro ao salvar usuário: {e}"}), 500
 
 
 @bp.post("/login")
 def login_usuario():
-    from app import db
-    if db is None:
-        return jsonify({"erro": "Banco de dados não inicializado"}), 500
-
+    db = get_db()
     data = request.get_json() or {}
     email = data.get("email", "").strip()
     senha = data.get("senha", "").strip()
@@ -77,10 +78,7 @@ def login_usuario():
 
 @bp.get("/instituicoes")
 def buscar_instituicoes():
-    from app import db
-    if db is None:
-        return jsonify({"erro": "Banco de dados não inicializado"}), 500
-
+    db = get_db()
     q = (request.args.get("q") or "").strip()
     uf = (request.args.get("estado") or "").strip().upper()
 
@@ -93,7 +91,9 @@ def buscar_instituicoes():
         instituicoes = [document_to_dict(doc) for doc in results]
 
         if q:
-            instituicoes = [i for i in instituicoes if q.lower() in i.get("nome", "").lower()]
+            instituicoes = [
+                i for i in instituicoes if q.lower() in i.get("nome", "").lower()
+            ]
 
         return jsonify(instituicoes), 200
     except Exception as e:
@@ -102,10 +102,7 @@ def buscar_instituicoes():
 
 @bp.post("/instituicoes")
 def cadastrar_instituicao():
-    from app import db
-    if db is None:
-        return jsonify({"erro": "Banco de dados não inicializado"}), 500
-
+    db = get_db()
     data = request.get_json() or {}
     obrigatorios = ["nome", "cnpj"]
 
@@ -126,14 +123,17 @@ def cadastrar_instituicao():
             "endereco": data.get("endereco", ""),
             "criadoEm": firestore.SERVER_TIMESTAMP,
         })
-        return jsonify({"id": doc_ref[1].id, "mensagem": "Instituição cadastrada com sucesso!"}), 201
+        return jsonify({
+            "id": doc_ref[1].id,
+            "mensagem": "Instituição cadastrada com sucesso!"
+        }), 201
     except Exception as e:
         return jsonify({"erro": f"Erro ao cadastrar instituição: {e}"}), 500
 
 
 @bp.put("/instituicoes/<id>")
 def atualizar_instituicao(id):
-    from app import db
+    db = get_db()
     data = request.get_json() or {}
     try:
         db.collection("donatarios").document(id).update(data)
@@ -144,20 +144,16 @@ def atualizar_instituicao(id):
 
 @bp.delete("/instituicoes/<id>")
 def excluir_instituicao(id):
-    from app import db
+    db = get_db()
     try:
         db.collection("donatarios").document(id).delete()
         return jsonify({"mensagem": "Instituição excluída com sucesso!"}), 200
     except Exception as e:
         return jsonify({"erro": f"Erro ao excluir instituição: {e}"}), 500
 
-
 @bp.post("/doacoes")
 def registrar_doacao():
-    from app import db
-    if db is None:
-        return jsonify({"erro": "Banco de dados não inicializado"}), 500
-
+    db = get_db()
     data = request.get_json() or {}
     try:
         doc_ref = db.collection("doacoes").add({
@@ -167,6 +163,9 @@ def registrar_doacao():
             "mensagem": data.get("mensagem", ""),
             "criadoEm": firestore.SERVER_TIMESTAMP,
         })
-        return jsonify({"id": doc_ref[1].id, "mensagem": "Doação registrada!"}), 201
+        return jsonify({
+            "id": doc_ref[1].id,
+            "mensagem": "Doação registrada!"
+        }), 201
     except Exception as e:
         return jsonify({"erro": f"Erro ao registrar doação: {e}"}), 500
