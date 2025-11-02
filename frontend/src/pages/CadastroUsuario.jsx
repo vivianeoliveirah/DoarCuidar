@@ -1,6 +1,6 @@
 // src/pages/CadastroUsuario.jsx
 import { useState } from "react";
-import Layout from "@/componentes/layout/Layout";
+import Layout from "@/componentes/Layout/Layout";
 import FormCard from "@/componentes/ui/FormCard";
 import InputTexto from "@/componentes/ui/InputTexto";
 import CampoSenha from "@/componentes/ui/CampoSenha";

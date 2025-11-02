@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Layout from "@/componentes/layout/Layout";
+import Layout from "@/componentes/Layout/Layout";
 import Fundo from "@/assets/fundo.png";
 import Button from "@/componentes/ui/Button";
 

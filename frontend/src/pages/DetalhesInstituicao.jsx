@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import Layout from "@/componentes/layout/Layout";
+import Layout from "@/componentes/Layout/Layout";
 import FormCard from "@/componentes/ui/FormCard";
 
 function cleanCnpj(v = "") { return String(v).replace(/\D/g, ""); }

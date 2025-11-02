@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useLocation } from "react-router-dom";
-import Layout from "@/componentes/layout/Layout";
+import Layout from "@/componentes/Layout/Layout";
 import FormCard from "@/componentes/ui/FormCard";
 import FormDoacao from "@/componentes/instituicoes/FormDoacao";
 
