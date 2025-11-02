@@ -4,6 +4,7 @@ import Logo from "../../assets/LogoDoarCuidar.png";
 import Fundo from "../../assets/fundo.png";
 import Button from "@/componentes/ui/Button";
 import CampoSenha from "@/componentes/ui/CampoSenha";
+import { api } from "@/lib/api";
 
 export default function FormLogin() {
   const [email, setEmail] = useState("");
@@ -11,16 +12,28 @@ export default function FormLogin() {
   const [erro, setErro] = useState("");
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setErro("");
-    if (!email || !senha) return setErro("Informe e-mail e senha.");
 
-    // login mockado
-    const usuario = { nome: email.split("@")[0], email };
-    localStorage.setItem("usuario", JSON.stringify(usuario));
-    localStorage.setItem("token", "ok");
-    navigate("/perfil");
+    if (!email || !senha) {
+      return setErro("Informe e-mail e senha.");
+    }
+
+    try {
+      const data = await api.request("/login", {
+        method: "POST",
+        body: JSON.stringify({ email, senha }),
+      });
+
+      // Login OK
+      localStorage.setItem("usuario", JSON.stringify(data));
+      localStorage.setItem("token", "ok");
+      navigate("/perfil");
+    } catch (err) {
+      console.error(err);
+      setErro("Erro de conexão com o servidor ou credenciais inválidas.");
+    }
   }
 
   return (
