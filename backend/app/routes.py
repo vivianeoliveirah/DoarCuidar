@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from firebase_admin import firestore
-from backend.main import get_db
+from app.extensions import get_db
 from app.consulta_empresas import is_cnpj
 
 bp = Blueprint("api", __name__)

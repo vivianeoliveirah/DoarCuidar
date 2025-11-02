@@ -1,43 +1,42 @@
 import os
 import json
-import firebase_admin
-from firebase_admin import credentials, firestore
-from flask_cors import CORS
-from flask import Flask
+from firebase_admin import credentials, firestore, initialize_app
 
 db = None
 
-def init_firebase_admin(app: Flask):    
+def init_firebase():    
     global db
+    try:
+        firebase_json = (
+            os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+            or os.getenv("FIREBASE_ADMIN_CONFIG")
+        )
 
-    try:        
-        cred_source = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+        if not firebase_json:
+            raise ValueError("Variável de ambiente com credenciais Firebase não encontrada.")
+       
+        if firebase_json.strip().startswith("{"):
+            cred_dict = json.loads(firebase_json)
+            if "private_key" in cred_dict:
+                cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
+            cred = credentials.Certificate(cred_dict)
+            initialize_app(cred)
+        
+        elif os.path.exists(firebase_json):
+            cred = credentials.Certificate(firebase_json)
+            initialize_app(cred)
+        else:
+            raise ValueError(f"Caminho inválido: {firebase_json}")
 
-        if cred_source:
-            if os.path.exists(cred_source):                
-                cred = credentials.Certificate(cred_source)
-                app.logger.info(f"Firebase inicializado com arquivo: {cred_source}")
-            else:                
-                cred_dict = json.loads(cred_source)
-                cred = credentials.Certificate(cred_dict)
-                app.logger.info("Firebase inicializado via JSON de ambiente.")
-        else:            
-            local_path = "C:/Users/Viviane/Downloads/serviceAccountKey.json"
-            cred = credentials.Certificate(local_path)
-            app.logger.info(f"Firebase inicializado localmente com {local_path}")
-
-        firebase_admin.initialize_app(cred)
         db = firestore.client()
-        app.logger.info("✅ Firebase conectado com sucesso!")
-
+        print("✅ Firebase conectado com sucesso!")
     except Exception as e:
-        app.logger.warning(f"⚠️ Erro ao inicializar Firebase: {e}")
+        print(f"⚠️ Erro ao inicializar Firebase: {e}")
         db = None
 
 
-def init_extensions(app: Flask):    
-    CORS(app, resources={r"/api/*": {"origins": [
-        "http://localhost:5173",
-        "https://doarcuidar.netlify.app",
-        "https://doarcuidar.onrender.com"
-    ]}})
+def get_db():   
+    global db
+    if db is None:
+        init_firebase()
+    return db
