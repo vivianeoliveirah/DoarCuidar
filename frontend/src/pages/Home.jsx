@@ -1,4 +1,4 @@
-import Layout from "@/componentes/layout/Layout";
+import Layout from "@/componentes/Layout/Layout";
 import HeroSection from "@/componentes/home/HeroSection";
 import DonationGallery from "@/componentes/home/DonationGallery";
 import { useNavigate } from "react-router-dom";
