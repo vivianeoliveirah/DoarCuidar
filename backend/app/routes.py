@@ -78,26 +78,49 @@ def login_usuario():
 
 @bp.get("/instituicoes")
 def buscar_instituicoes():
-    db = get_db()
+    from app import db
+    import requests
+
+    if db is None:
+        return jsonify({"erro": "Banco de dados não inicializado"}), 500
+
     q = (request.args.get("q") or "").strip()
     uf = (request.args.get("estado") or "").strip().upper()
+    instituicoes = []
 
-    try:
+    try:        
         query = db.collection("donatarios")
         if uf:
             query = query.where("uf", "==", uf)
-
         results = query.stream()
         instituicoes = [document_to_dict(doc) for doc in results]
-
-        if q:
-            instituicoes = [
-                i for i in instituicoes if q.lower() in i.get("nome", "").lower()
-            ]
+        
+        if q and len(instituicoes) == 0:
+            cnpj_digits = "".join(filter(str.isdigit, q))
+            if len(cnpj_digits) == 14:
+                api_url = f"https://brasilapi.com.br/api/cnpj/v1/{cnpj_digits}"
+                r = requests.get(api_url, timeout=10)
+                if r.status_code == 200:
+                    data = r.json()
+                    instituicoes.append({
+                        "nome": data.get("razao_social"),
+                        "cnpj": data.get("cnpj"),
+                        "uf": data.get("uf"),
+                        "cidade": data.get("municipio"),
+                        "endereco": data.get("logradouro"),
+                        "telefone": data.get("ddd_telefone_1"),
+                        "email": data.get("email", ""),
+                        "descricao": "Instituição verificada via BrasilAPI."
+                    })
+        
+        if q and len(cnpj_digits) != 14:
+            instituicoes = [i for i in instituicoes if q.lower() in i.get("nome", "").lower()]
 
         return jsonify(instituicoes), 200
+
     except Exception as e:
         return jsonify({"erro": f"Erro ao consultar instituições: {e}"}), 500
+
 
 
 @bp.post("/instituicoes")
