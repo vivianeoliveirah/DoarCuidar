@@ -14,14 +14,13 @@ def init_firebase():
 
         if not firebase_json:
             raise ValueError("Variável de ambiente com credenciais Firebase não encontrada.")
-        
+
         if firebase_json.strip().startswith("{"):
             cred_dict = json.loads(firebase_json)
             if "private_key" in cred_dict:
                 cred_dict["private_key"] = cred_dict["private_key"].replace("\\n", "\n")
             cred = credentials.Certificate(cred_dict)
             initialize_app(cred)
-        
         elif os.path.exists(firebase_json):
             cred = credentials.Certificate(firebase_json)
             initialize_app(cred)
@@ -35,7 +34,8 @@ def init_firebase():
         db = None
 
 
-def get_db():    
+def get_db():
+    
     global db
     if db is None:
         init_firebase()
