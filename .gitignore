@@ -1,34 +1,40 @@
-# Python / Flask
+# Ambiente virtual
+venv/
+.env
+
+# Compilações e caches
 __pycache__/
 *.pyc
-instance/
-migrations/
-.env
-*.env
-venv/
-.venv/
-.env.local
-.env.development
-.env.production
+*.pyo
+*.pyd
+*.log
+*.db
 
+# Build / Vite / Node
 node_modules/
 dist/
 build/
-*.tsbuildinfo
-
-frontend/frontend/
-frontend/backend/
-frontend/dist/
-
-.vscode/
-.DS_Store
-*.log
-*.sqlite3
-*.db
-
-serviceAccountKey.json
-firebase-key.json
-
-*.local
+.cache/
 frontend/node_modules/
 frontend/dist/
+
+# Temporários VSCode e Render
+*.tmp
+*.temp
+.DS_Store
+.vscode/
+*.sqlite3
+*.coverage
+*.bak
+*.swp
+*.swo
+
+# Arquivos de deploy temporários do Render
+Available
+Build
+Deploying...
+Running
+Uploaded
+Uploading
+Your
+tsc
