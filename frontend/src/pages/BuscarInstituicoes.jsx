@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
-import Layout from "@/componentes/Layout/Layout";
+import Layout from "@/componentes/layout/Layout";
 import { Search as SearchIcon } from "lucide-react";
 
 // DEMO estável (os 3 cards que você queria)

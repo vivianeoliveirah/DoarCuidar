@@ -1,5 +1,5 @@
 // src/pages/CadastroInstituicao.jsx
-import Layout from "@/componentes/Layout/Layout";
+import Layout from "@/componentes/layout/Layout";
 import FormCard from "@/componentes/ui/FormCard";
 import InputTexto from "@/componentes/ui/InputTexto";
 import Button from "@/componentes/ui/Button";
