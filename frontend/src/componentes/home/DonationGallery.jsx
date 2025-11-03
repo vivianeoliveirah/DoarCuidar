@@ -31,8 +31,7 @@ export default function DonationGallery({ items = 3 }) {
       <p className="mt-2 text-center text-slate-600">
         Conheça áreas onde sua doação faz a diferença.
       </p>
-
-      {/* Grid de cards */}
+      
       <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-5">
         {cards.map((card, i) => (
           <figure
@@ -56,8 +55,7 @@ export default function DonationGallery({ items = 3 }) {
           </figure>
         ))}
       </div>
-
-      {/* Botão centralizado abaixo dos cards */}
+      
       <div className="mt-8 flex justify-center">
         <button
           type="button"

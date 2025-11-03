@@ -14,8 +14,7 @@ export default function CadastroUsuario() {
   const set = (k) => (e) => setForm(p => ({...p, [k]: e.target?.type==="checkbox" ? e.target.checked : e.target.value}));
 
   function handleSubmit(e){
-    e.preventDefault();
-    // TODO: validar e salvar
+    e.preventDefault();   
   }
 
   return (

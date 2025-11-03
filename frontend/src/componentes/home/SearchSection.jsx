@@ -38,8 +38,7 @@ export default function SearchSection({ compact = true, limit = 3, showSeeAll = 
   return (
     <section id="buscar" className={compact ? "py-6 md:py-8" : "py-12 md:py-16"}>
       <h2 className="text-center page-subtitle">Buscar Instituições</h2>
-
-      {/* Form padrão (mesmo estilo global) */}
+      
       <form onSubmit={onSubmit} className="mx-auto mt-6 max-w-3xl">
         <div className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
@@ -72,8 +71,7 @@ export default function SearchSection({ compact = true, limit = 3, showSeeAll = 
           <button type="submit" className="btn-brand btn-md">Buscar</button>
         </div>
       </form>
-
-      {/* Cards DEMO (3) */}
+      
       <div className="mx-auto mt-8 max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {demoFiltrado.slice(0, limit).map((it) => (

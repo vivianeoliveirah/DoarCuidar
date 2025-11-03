@@ -43,8 +43,7 @@ export default function FormCadastroInstituicao({ showTitle = true }) {
     if (telefoneLimpo.length < 10)
       return setErro("Telefone incompleto.");
 
-    try {
-      // 🔹 Envia SOMENTE para o backend Flask
+    try {      
       const res = await api.request("/instituicoes", {
         method: "POST",
         body: JSON.stringify({

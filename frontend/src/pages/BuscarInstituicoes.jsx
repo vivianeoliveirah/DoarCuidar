@@ -3,7 +3,6 @@ import { useSearchParams, Link } from "react-router-dom";
 import Layout from "@/componentes/layout/Layout";
 import { Search as SearchIcon } from "lucide-react";
 
-// DEMO estável (os 3 cards que você queria)
 const DEMO = [
   { id:"sp-1", nome:"Instituto Esperança", cnpj:"12.345.678/0001-90", uf:"SP", desc:"Apoio a famílias vulneráveis com alimentação e educação." },
   { id:"rj-1", nome:"Lar Solidário",       cnpj:"98.765.432/0001-10", uf:"RJ", desc:"Moradia assistida para idosos." },
@@ -21,11 +20,10 @@ export default function BuscarInstituicoes() {
   const [uf, setUf] = useState(params.get("estado") ?? "");
 
   const [data, setData] = useState([]);
-  const [status, setStatus] = useState("idle"); // idle | loading | ok | empty | error
+  const [status, setStatus] = useState("idle"); 
   const [erro, setErro] = useState("");
   const [demo, setDemo] = useState(false);
 
-  // filtra DEMO localmente para fallback imediato
   const demoFiltrado = useMemo(() => {
     const qd = onlyDigits(q);
     return DEMO.filter(i =>
@@ -46,29 +44,27 @@ export default function BuscarInstituicoes() {
 
       const r = await fetch(`${BASE}/api/instituicoes?${sp.toString()}`);
       const ct = r.headers.get("content-type") || "";
-      // evita o erro "Unexpected token '<'"
+    
       if (!ct.includes("application/json")) throw new Error("A API não retornou JSON válido (verifique proxy/URL).");
       const js = await r.json();
       if (!Array.isArray(js)) throw new Error("Formato inesperado da API.");
       setData(js);
       setStatus(js.length ? "ok" : "empty");
     } catch (e) {
-      // fallback: usa os DEMO, mas exibe aviso
+      
       setData(demoFiltrado);
       setStatus(demoFiltrado.length ? "ok" : "empty");
       setDemo(true);
       setErro(String(e?.message || e));
     }
   }
-
-  // sincroniza URL -> estado e busca
+ 
   useEffect(() => {
     const pq = params.get("q") ?? "";
     const pe = params.get("estado") ?? "";
     setQ(pq);
     setUf(pe);
-    carregar();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    carregar();  
   }, [params]);
 
   function handleBuscar(e) {

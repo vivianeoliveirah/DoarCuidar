@@ -17,8 +17,7 @@ export default function DetalhesInstituicao() {
   const [instituicao, setInstituicao] = useState(state?.instituicao || null);
   const [erro, setErro] = useState(state?.erro || "");
 
-  useEffect(() => {
-    // se veio do state, já estamos prontos
+  useEffect(() => {    
     if (instituicao || erro) return;
 
     const cnpj = cleanCnpj(state?.cnpj);

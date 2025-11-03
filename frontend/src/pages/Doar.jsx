@@ -4,7 +4,6 @@ import Layout from "@/componentes/layout/Layout";
 import FormCard from "@/componentes/ui/FormCard";
 import FormDoacao from "@/componentes/instituicoes/FormDoacao";
 
-// fallback local — mesmo conjunto da busca/home
 const DEMO = [
   { id:"sp-1", nome:"Instituto Esperança" },
   { id:"rj-1", nome:"Lar Solidário" },
@@ -21,10 +20,7 @@ export default function Doar() {
     if (inst) return;
 
     (async () => {
-      try {
-        // Tente obter de uma API real aqui se desejar.
-        // Se sua função "api.listarInstituicoes" retornar HTML por erro, evite usar.
-        // Fallback imediato:
+      try {        
         const found = DEMO.find((i) => String(i.id) === String(id));
         if (!found) throw new Error("Instituição não encontrada.");
         setInst(found);

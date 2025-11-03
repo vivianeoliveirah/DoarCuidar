@@ -25,8 +25,7 @@ export default function FormLogin() {
         method: "POST",
         body: JSON.stringify({ email, senha }),
       });
-
-      // Login OK
+      
       localStorage.setItem("usuario", JSON.stringify(data));
       localStorage.setItem("token", "ok");
       navigate("/perfil");

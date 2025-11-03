@@ -12,8 +12,7 @@ export default function HeroSection() {
         aria-hidden
         className="pointer-events-none absolute right-[-6rem] top-6 h-72 w-72 rounded-full bg-emerald-200/40 blur-3xl"
       />
-
-      {/* conteúdo */}
+     
       <div className="container-p py-6 md:py-8 flex-grow flex items-center">
         <div className="mx-auto max-w-4xl text-center">
           <h1 className="text-4xl md:text-5xl font-bold leading-tight tracking-tight">

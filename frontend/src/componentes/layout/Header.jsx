@@ -51,8 +51,7 @@ export default function Header() {
             Doar<span className="text-emerald-600">Cuidar</span>
           </span>
         </Link>
-
-        {/* Botão mobile */}
+        
         <button
           className="md:hidden p-2 rounded hover:bg-gray-200"
           aria-label={open ? "Fechar menu" : "Abrir menu"}
@@ -62,8 +61,7 @@ export default function Header() {
         >
           {open ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
-
-        {/* Nav desktop */}
+       
         <nav className="hidden md:flex items-center gap-2" aria-label="Navegação principal">
           <NavItem to="/" icon={Home}>Home</NavItem>
           <NavItem to="/buscar" icon={Search}>Buscar</NavItem>
@@ -86,8 +84,7 @@ export default function Header() {
               </button>
             </>
           )}
-
-          {/* Botão Doar agora no tom emerald */}
+          
           <Link to="/buscar" className="ml-2">
             <button
               type="button"
@@ -99,8 +96,7 @@ export default function Header() {
           </Link>
         </nav>
       </div>
-
-      {/* Nav mobile */}
+      
       {open && (
         <nav
           id={navId}
