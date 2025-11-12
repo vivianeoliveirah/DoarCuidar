@@ -45,19 +45,6 @@ Projeto do **Integrador II**, aproximando teoria e prática em um cenário de mu
 > **Modo DEMO:** caso a API não responda JSON, o app usa uma lista de instituições fictícias para apresentação.
 
 ---
-
-## 🎨 Layout
-
-> Substitua os caminhos abaixo pelos seus prints reais:
-
-- Home: `assets/prints/home.png`
-- Buscar Instituições: `assets/prints/buscar.png`
-- Cadastro de Usuário: `assets/prints/cadastro-usuario.png`
-- Cadastro de Instituição: `assets/prints/cadastro-instituicao.png`
-- Detalhes / Doar: `assets/prints/detalhes-doar.png`
-
----
-
 ## 🚀 Como executar o projeto
 
 1. **Clone o projeto**
@@ -211,10 +198,7 @@ Keven
 Lucca
 
 Viviane Oliveira Soares
-
 ---
 
-<!-- ---------------------------------------------------------------------- -->
 
-<!-- MODELO DE LICENÇA -->
-## 📝 Licença
+
